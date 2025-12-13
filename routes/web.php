@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Kreait\Firebase\Factory;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,3 +30,5 @@ Route::get('/test-firebase', function () {
         ]);
     }
 });
+
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
