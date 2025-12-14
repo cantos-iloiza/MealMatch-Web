@@ -47,9 +47,128 @@
         .meal-detail-card:hover {
             transform: translateX(4px);
         }
+
+        /* New Meal Card Styles matching the image */
+        .meal-card {
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .meal-card.breakfast-card {
+            background-color: #fef9f0;
+        }
+
+        .meal-card.lunch-card {
+            background-color: #fff5f0;
+        }
+
+        .meal-card.dinner-card {
+            background-color: #f0f8f5;
+        }
+
+        .meal-card.snacks-card {
+            background-color: #fff3f0;
+        }
+
+        .meal-icon-circle {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .meal-icon-circle i {
+            font-size: 1.75rem;
+        }
+
+        .meal-icon-circle.breakfast-icon i {
+            color: #f7941d;
+        }
+
+        .meal-icon-circle.lunch-icon i {
+            color: #f7941d;
+        }
+
+        .meal-icon-circle.dinner-icon i {
+            color: #6b9080;
+        }
+
+        .meal-icon-circle.snacks-icon i {
+            color: #f7941d;
+        }
+
+        .meal-add-button {
+            height: 2.5rem;
+            padding: 0 1rem;
+            border-radius: 0.75rem;
+            background-color: #D4EBD5;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .meal-add-button:hover {
+            background-color: #B8DDB9; /* Darker shade of #D4EBD5 */
+            transform: scale(1.05);
+        }
+
+        .meal-add-button i {
+            font-size: 1.5rem;
+            color: #2d2d2d; /* Changed to dark gray/black */
+        }
+
+        .meal-add-button span {
+            color: #2d2d2d; /* Add this for the text color */
+            font-weight: 500; /* Optional: make it medium weight */
+        }
+
+        .food-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .food-item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .food-item-row:first-child {
+            padding-top: 0;
+        }
+
+        .food-item-name {
+            font-size: 1rem;
+            color: #2d2d2d;
+            font-weight: 400;
+        }
+
+        .food-item-calories {
+            font-size: 1rem;
+            color: #888;
+            font-weight: 400;
+        }
     </style>
 </head>
-<body class="bg-[#fef5e7] min-h-screen">
+<body class="bg-[#FFF5CF] min-h-screen">
     <!-- Header -->
     <div class="bg-gradient-to-r from-[#f7941d] to-[#f5b461] text-white px-6 py-5 shadow-lg rounded-b-[2rem]">
         <div class="max-w-[1400px] mx-auto flex justify-between items-center">
@@ -70,25 +189,25 @@
             <!-- LEFT SIDEBAR - Profile & Stats -->
             <div class="space-y-5">
                 <!-- Profile Card -->
-                <div class="bg-gradient-to-br from-[#f7941d] to-[#f5b461] rounded-[1.5rem] p-6 shadow-lg text-white">
+                <div class="bg-gradient-to-br from-[#ffffff] to-[#ffffff] rounded-[1.5rem] p-6 shadow-lg text-black">
                     <div class="flex items-center gap-4 mb-4">
                         <div class="relative">
-                            <div class="w-20 h-20 rounded-full bg-white/20 border-4 border-white flex items-center justify-center overflow-hidden">
+                            <div class="w-20 h-20 rounded-full bg-gray/20 border-4 border-orange flex items-center justify-center overflow-hidden">
                                 <span class="text-3xl font-bold" id="profileInitials">JC</span>
                             </div>
                         </div>
                         <div class="flex-1">
                             <h2 class="text-xl font-bold mb-1" id="userName">Juan Dela Cruz</h2>
-                            <p class="text-white/90 text-sm" id="userEmail">juandelacruz@email.com</p>
+                            <p class="text-black/90 text-sm" id="userEmail">juandelacruz@email.com</p>
                         </div>
-                        <button class="text-white/80 hover:text-white text-xl transition-all">
+                        <button class="text-black/80 hover:text-black text-xl transition-all">
                             <i class="fas fa-cog"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- Weekly Login Streak -->
-                <div class="bg-[#fdebd0] rounded-[1.5rem] p-6 shadow-lg">
+                <div class="bg-[#ffffff] rounded-[1.5rem] p-6 shadow-lg">
                     <div class="flex items-center gap-3 mb-5">
                         <i class="fas fa-fire text-[#f7941d] text-2xl"></i>
                         <h3 class="text-lg font-bold text-gray-800">Weekly Streak</h3>
@@ -127,25 +246,25 @@
                 </div>
 
                 <!-- Highest Streak -->
-                <div class="bg-[#d1dfd2] rounded-[1.5rem] p-6 shadow-lg">
+                <div class="bg-[#ffffff] rounded-[1.5rem] p-6 shadow-lg">
                     <div class="flex items-center gap-3 mb-4">
-                        <i class="fas fa-chart-line text-[#f7941d] text-xl"></i>
+                        <i class="fas fa-chart-line text-[#ff9800] text-xl"></i>
                         <h3 class="text-lg font-bold text-gray-800">Highest Streak</h3>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <p class="text-5xl font-bold text-[#6b9080]" id="highestStreak">21</p>
+                        <p class="text-5xl font-bold text-[#4caf50]" id="highestStreak">21</p>
                         <p class="text-gray-700 font-medium text-lg">days</p>
                     </div>
                 </div>
 
                 <!-- Average Calories -->
-                <div class="bg-[#d1dfd2] rounded-[1.5rem] p-6 shadow-lg">
+                <div class="bg-[#ffffff] rounded-[1.5rem] p-6 shadow-lg">
                     <div class="flex items-center gap-3 mb-4">
-                        <i class="fas fa-fire text-[#f7941d] text-xl"></i>
+                        <i class="fas fa-fire text-[#ff9800] text-xl"></i>
                         <h3 class="text-lg font-bold text-gray-800">Avg Daily Intake</h3>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <p class="text-5xl font-bold text-[#6b9080]" id="avgCalories">1850</p>
+                        <p class="text-5xl font-bold text-[#4caf50]" id="avgCalories">1850</p>
                         <p class="text-gray-700 font-medium text-lg">cal</p>
                     </div>
                 </div>
@@ -157,13 +276,13 @@
                 <div class="flex flex-wrap gap-3 items-center">
                     <span class="text-gray-700 font-semibold text-base">View:</span>
                     <div class="flex gap-3">
-                        <button onclick="filterByDate('today')" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-[#6b9080] text-white hover:bg-[#5a8070] transition-all shadow-md" id="todayBtn">
+                        <button onclick="filterByDate('today')" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-gray-700 hover:bg-[#6b9080] hover:text-white transition-all shadow-md" id="todayBtn">
                             Today
                         </button>
-                        <button onclick="filterByDate('thisWeek')" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-gray-700 hover:bg-gray-100 transition-all shadow-md" id="thisWeekBtn">
+                        <button onclick="filterByDate('thisWeek')" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-gray-700 hover:bg-[#6b9080] hover:text-white transition-all shadow-md" id="thisWeekBtn">
                             This Week
                         </button>
-                        <button onclick="openCalendar()" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-[#fdebd0] text-gray-700 hover:bg-[#fce0b8] transition-all shadow-md flex items-center gap-2" id="customBtn">
+                        <button onclick="openCalendar()" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-gray-700 hover:bg-[#6b9080] hover:text-white transition-all shadow-md flex items-center gap-2" id="customBtn">
                             <i class="fas fa-calendar text-[#f7941d]"></i> Custom Date
                         </button>
                     </div>
@@ -220,3 +339,11 @@
     </div>
 </body>
 </html>
+
+
+
+
+
+
+
+

@@ -354,8 +354,7 @@ function getFakeWeeklyData() {
                     foods: [
                         { name: 'Baked Salmon', calories: 367 },
                         { name: 'Roasted Sweet Potato', calories: 112 },
-                        { name: 'Grilled Asparagus', calories: 40 },
-                        { name: 'Green Salad', calories: 120 }
+                        { name: 'Grilled Asparagus', calories: 40 }
                     ]
                 },
                 {
@@ -574,8 +573,8 @@ function renderTodayView(dayData) {
     }
     
     const progress = Math.min((dayData.logged / dayData.goal) * 100, 100);
-    const progressColor = dayData.status === 'Over Goal' ? '#e8674a' : '#6b9080';
-    const statusBg = dayData.status === 'Over Goal' ? '#e8674a' : '#6b9080';
+    const progressColor = dayData.status === 'Over Goal' ? '#ff0000' : '#ff9800';
+    const statusBg = dayData.status === 'Over Goal' ? '#ff0000' : '#4CAF50';
     
     container.innerHTML = `
         <div class="mb-6">
@@ -606,7 +605,7 @@ function renderTodayView(dayData) {
             </div>
             
             <!-- Meals Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 ${dayData.meals.map(meal => renderMealCard(meal)).join('')}
             </div>
         </div>
@@ -635,16 +634,16 @@ function renderWeeklyOverview(weekData) {
 function renderDayCard(day) {
     const hasLogs = day.logged > 0;
     const progress = Math.min((day.logged / day.goal) * 100, 100);
-    const progressColor = day.status === 'Over Goal' ? '#e8674a' : '#6b9080';
-    const statusBg = day.status === 'Over Goal' ? '#e8674a' : day.status === 'No Logs' ? '#d1dfd2' : '#6b9080';
+    const progressColor = day.status === 'Over Goal' ? '#ff0000' : '#ff9800'; // Changed to red and green
+    const statusBg = day.status === 'Over Goal' ? '#ff0000' : day.status === 'No Logs' ? '#d1dfd2' : '#4CAF50'; // Changed
     const circleOpacity = hasLogs ? 'opacity-100' : 'opacity-40';
     
     return `
-        <div class="bg-[#fef5e7] rounded-2xl p-5 shadow-md hover:shadow-lg transition-all day-card">
+        <div class="bg-[#E8F5E9] rounded-2xl p-5 shadow-md hover:shadow-lg transition-all day-card">
             <div class="flex items-center gap-4">
                 <!-- Date Circle -->
                 <div class="flex-shrink-0">
-                    <div class="w-16 h-16 rounded-2xl bg-[#6b9080] ${circleOpacity} text-white flex flex-col items-center justify-center shadow-md">
+                    <div class="w-16 h-16 rounded-2xl bg-[#FFF9E6] ${circleOpacity} text-black flex flex-col items-center justify-center shadow-md">
                         <span class="text-2xl font-bold">${day.dayNum}</span>
                         <span class="text-xs uppercase">${day.month}</span>
                     </div>
@@ -662,15 +661,15 @@ function renderDayCard(day) {
                     <!-- Stats Row -->
                     <div class="grid grid-cols-3 gap-3 text-center text-sm mb-3">
                         <div>
-                            <p class="text-gray-600 text-xs mb-1">Goal</p>
+                            <p class="text-gray-700 text-xs mb-1 font-medium">Goal</p>
                             <p class="font-bold text-gray-800">${day.goal}</p>
                         </div>
                         <div>
-                            <p class="text-gray-600 text-xs mb-1">Logged</p>
+                            <p class="text-gray-700 text-xs mb-1 font-medium">Logged</p>
                             <p class="font-bold text-gray-800">${day.logged}</p>
                         </div>
                         <div>
-                            <p class="text-gray-600 text-xs mb-1">Remaining</p>
+                            <p class="text-gray-700 text-xs mb-1 font-medium">Remaining</p>
                             <p class="font-bold" style="color: ${progressColor}">${Math.abs(day.remaining)}</p>
                         </div>
                     </div>
@@ -687,7 +686,7 @@ function renderDayCard(day) {
                 
                 <!-- Arrow Button -->
                 ${hasLogs ? `
-                    <button onclick="showDayDetail('${day.date}')" class="flex-shrink-0 w-10 h-10 rounded-xl bg-white hover:bg-[#6b9080] text-gray-600 hover:text-white flex items-center justify-center transition-all shadow-md">
+                    <button onclick="showDayDetail('${day.date}')" class="flex-shrink-0 w-10 h-10 rounded-xl bg-white hover:bg-[#6aa84f] text-gray-600 hover:text-white flex items-center justify-center transition-all shadow-md">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 ` : ''}
@@ -696,44 +695,61 @@ function renderDayCard(day) {
     `;
 }
 
+// ====== UPDATED MEAL CARD FUNCTION - NEW DESIGN MATCHING IMAGE ======
 function renderMealCard(meal) {
+    // Define meal icons
     const mealIcons = {
-        'Breakfast': 'fa-mug-hot',
-        'Lunch': 'fa-bowl-food',
+        'Breakfast': 'fa-sun',
+        'Lunch': 'fa-mug-hot',
         'Dinner': 'fa-moon',
         'Snacks': 'fa-apple-alt'
     };
     
-    const mealColors = {
-        'Breakfast': '#f5b461',
-        'Lunch': '#f7941d',
-        'Dinner': '#6b9080',
-        'Snacks': '#e8674a'
+    // Define card background colors matching the image
+    const cardClasses = {
+        'Breakfast': 'breakfast-card',
+        'Lunch': 'lunch-card',
+        'Dinner': 'dinner-card',
+        'Snacks': 'snacks-card'
+    };
+    
+    // Define icon colors
+    const iconClasses = {
+        'Breakfast': 'breakfast-icon',
+        'Lunch': 'lunch-icon',
+        'Dinner': 'dinner-icon',
+        'Snacks': 'snacks-icon'
     };
     
     const icon = mealIcons[meal.type] || 'fa-utensils';
-    const color = mealColors[meal.type] || '#f7941d';
+    const cardClass = cardClasses[meal.type] || 'breakfast-card';
+    const iconClass = iconClasses[meal.type] || 'breakfast-icon';
     
     return `
-        <div class="bg-white rounded-2xl p-5 shadow-md hover:shadow-lg transition-all" style="border-left: 5px solid ${color}">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center gap-3">
-                    <i class="fas ${icon} text-2xl" style="color: ${color}"></i>
+        <div class="meal-card ${cardClass}">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="meal-icon-circle ${iconClass}">
+                        <i class="fas ${icon}"></i>
+                    </div>
                     <div>
-                        <h3 class="font-bold text-gray-800 text-lg">${meal.type}</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">${meal.type}</h3>
                         <p class="text-sm text-gray-600">${meal.totalCal} cal</p>
                     </div>
                 </div>
-                <button onclick="window.location.href='/food-log'" class="px-4 py-2 bg-[#f7941d] hover:bg-[#f5b461] text-white rounded-xl font-semibold text-sm transition-all shadow-md">
-                    <i class="fas fa-plus mr-1"></i> Add
+                <button class="meal-add-button" onclick="window.location.href='/food-log'">
+                    <i class="fas fa-plus"></i>
+                    <span class="ml-2">Add Food</span>
                 </button>
             </div>
             
-            <div class="space-y-2">
+            <!-- Food Items -->
+            <div>
                 ${meal.foods.map(food => `
-                    <div class="flex justify-between items-center text-sm py-1.5 border-b border-gray-100 last:border-0">
-                        <span class="text-gray-700">• ${food.name}</span>
-                        <span class="font-semibold text-gray-800">${food.calories} cal</span>
+                    <div class="food-item-row">
+                        <span class="food-item-name">${food.name}</span>
+                        <span class="food-item-calories">${food.calories} cal</span>
                     </div>
                 `).join('')}
             </div>
@@ -769,8 +785,8 @@ function showDayDetail(dateStr) {
     title.textContent = `${dayData.dayName}, December ${dayData.dayNum}`;
     
     const progress = Math.min((dayData.logged / dayData.goal) * 100, 100);
-    const progressColor = dayData.status === 'Over Goal' ? '#e8674a' : '#6b9080';
-    const statusBg = dayData.status === 'Over Goal' ? '#e8674a' : '#6b9080';
+    const progressColor = dayData.status === 'Over Goal' ? '#ff0000' : '#ff9800';
+    const statusBg = dayData.status === 'Over Goal' ? '#ff0000' : '#4CAF50';
     
     content.innerHTML = `
         <div class="mb-6">
@@ -812,17 +828,18 @@ function showDayDetail(dateStr) {
 
 function renderMealDetailCard(meal) {
     const mealIcons = {
-        'Breakfast': 'fa-mug-hot',
-        'Lunch': 'fa-bowl-food',
+        'Breakfast': 'fa-sun',
+        'Lunch': 'fa-mug-hot',
         'Dinner': 'fa-moon',
         'Snacks': 'fa-apple-alt'
     };
     
+    // Using same colors as Today view
     const mealColors = {
-        'Breakfast': '#f5b461',
-        'Lunch': '#f7941d',
-        'Dinner': '#6b9080',
-        'Snacks': '#e8674a'
+        'Breakfast': '#efc16b',
+        'Lunch': '#ffc39f',
+        'Dinner': '#66c8a7',
+        'Snacks': '#ffb796'
     };
     
     const icon = mealIcons[meal.type] || 'fa-utensils';
