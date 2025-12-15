@@ -15,6 +15,11 @@ Route::get('/recipe/{id}', function($id) {
     return view('recipe-detail', compact('id'));
 })->name('recipe.show');
 
+// Settings route
+Route::view('/settings', 'settings')->name('settings');
+Route::view('/aboutus', 'aboutus')->name('aboutus');
+Route::view('/usermanual', 'usermanual')->name('usermanual');
+
 // Notifications route
 Route::get('/notifications', function () {
     return view('notifications');
