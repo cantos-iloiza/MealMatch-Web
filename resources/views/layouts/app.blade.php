@@ -10,6 +10,9 @@
     {{-- Tailwind CSS CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
     
+    {{-- Font Awesome --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     {{-- Custom Styles --}}
     <style>
         body {
@@ -86,6 +89,61 @@
         .sidebar-icon.active {
             background-color: #FEF3C7;
         }
+
+        /* Profile Modal - Dropdown Style */
+        .profile-dropdown {
+            position: fixed;
+            top: 5rem;
+            right: 2rem;
+            z-index: 100;
+            animation: dropdownSlideIn 0.3s ease;
+            transform-origin: top right;
+        }
+
+        @keyframes dropdownSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Overlay without blur - just for clicking outside */
+        .dropdown-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99;
+            background: transparent;
+        }
+
+        /* Default Avatar Icon */
+        .default-avatar {
+            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+        }
+
+        /* Arrow pointing to profile button */
+        .profile-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 2.5rem;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            transform: rotate(45deg);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
     </style>
     
     {{-- Additional styles from pages --}}
@@ -141,24 +199,14 @@
                 </a>
                 
                 {{-- Settings --}}
-                <a href="#" 
-                   class="sidebar-icon"
+                <a href="{{ route('settings') }}"
+                   class="sidebar-icon {{ request()->is('settings') ? 'active' : '' }}"
                    title="Settings">
-                    <svg class="w-7 h-7 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-7 h-7 {{ request()->is('settings') ? 'text-orange-600' : 'text-gray-700' }}" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
                     </svg>
                 </a>
             </div>
-            
-            {{-- Logout Button (Bottom)
-            <button onclick="logout()" 
-                    class="sidebar-icon hover:bg-red-50"
-                    title="Logout">
-                <svg class="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
-                </svg>
-            </button>
-             --}}
         </aside>
         
         {{-- Main Content Area --}}
@@ -166,43 +214,36 @@
             {{-- Top Section --}}
             <div class="px-8 pt-8 pb-6">
                 <div class="flex items-center justify-between mb-8">
-                    {{-- Dashboard Title --}}
-                    <h1 class="text-5xl font-bold">
-                        <span class="text-green-600">Dash</span><span class="text-orange-500">board</span>
-                    </h1>
+                    {{-- Page Title - Can be overridden by child views --}}
+                    @yield('page-title')
                     
                     {{-- User Profile --}}
                     <div class="flex items-center gap-4">
                         {{-- Notifications --}}
-                        <a href="{{ route('notifications') }}" class="relative bg-white/50 rounded-full p-4 hover:bg-white/75 rounded-full transition">
+                        <a href="{{ route('notifications') }}" class="relative bg-white/50 rounded-full p-4 hover:bg-white/75 transition">
                             <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                             </svg>
                             <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
                         </a>
                         
-                        {{-- User Avatar & Name --}}
-                        @if(isset($user) && $user)
-                        <div class="flex items-center gap-3 bg-white/50 rounded-full pr-6 pl-2 py-2">
-                            <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=FF6B6B&color=fff' }}" 
-                                 alt="{{ $user->name }}"
-                                 class="w-12 h-12 rounded-full border-2 border-white">
-                            <div>
-                                <p class="font-bold text-gray-900">{{ $user->name }}</p>
-                                <p class="text-sm text-gray-600">{{ $user->email }}</p>
+                        {{-- User Avatar & Name - CLICKABLE --}}
+                        <button onclick="toggleProfileDropdown()" class="flex items-center gap-3 bg-white/50 hover:bg-white/75 rounded-full pr-6 pl-2 py-2 transition-all cursor-pointer">
+                            @if(isset($user) && $user && $user->avatar)
+                                <img src="{{ $user->avatar }}" 
+                                     alt="{{ $user->name ?? 'User' }}"
+                                     class="w-12 h-12 rounded-full border-2 border-white object-cover">
+                            @else
+                                {{-- Default Avatar Icon (Facebook style) --}}
+                                <div class="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center default-avatar">
+                                    <i class="fas fa-user text-gray-600 text-xl"></i>
+                                </div>
+                            @endif
+                            <div class="text-left">
+                                <p class="font-bold text-gray-900" id="header-user-name">{{ $user->name ?? 'Guest' }}</p>
+                                <p class="text-sm text-gray-600" id="header-user-status">{{ isset($user) && $user ? 'Logged in' : 'Not logged in' }}</p>
                             </div>
-                        </div>
-                        @else
-                        <div class="flex items-center gap-3 bg-white/50 rounded-full pr-6 pl-2 py-2">
-                            <div class="w-12 h-12 bg-pink-400 rounded-full flex items-center justify-center border-2 border-white">
-                                <span class="text-white font-bold text-lg">U</span>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">User Name</p>
-                                <p class="text-sm text-gray-600">useremail@gmail.com</p>
-                            </div>
-                        </div>
-                        @endif
+                        </button>
                     </div>
                 </div>
             </div>
@@ -213,6 +254,44 @@
             </main>
         </div>
     </div>
+
+    {{-- Profile Dropdown (No blur overlay, just appears on top) --}}
+    <div id="profileDropdownOverlay" class="dropdown-overlay hidden" onclick="closeProfileDropdown()"></div>
+    <div id="profileDropdown" class="profile-dropdown glass-morphism rounded-3xl p-6 w-80 shadow-2xl hidden">
+        {{-- Avatar --}}
+        <div class="flex justify-center mb-4">
+            <div id="modal-avatar-container">
+                @if(isset($user) && $user && $user->avatar)
+                    <img src="{{ $user->avatar }}" 
+                         alt="{{ $user->name ?? 'User' }}"
+                         class="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover">
+                @else
+                    <div class="w-20 h-20 rounded-full border-4 border-white shadow-lg flex items-center justify-center default-avatar">
+                        <i class="fas fa-user text-gray-600 text-3xl"></i>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- User Info --}}
+        <div class="text-center mb-5">
+            <h3 class="text-xl font-bold text-gray-800 mb-1" id="modal-user-name">{{ $user->name ?? 'Guest' }}</h3>
+            <p class="text-gray-600 text-sm" id="modal-user-email">{{ $user->email ?? 'Not logged in' }}</p>
+        </div>
+
+        {{-- Action Buttons --}}
+        <div class="space-y-2.5">
+            {{-- View Full Profile --}}
+            <a href="{{ route('profile.index') }}" class="block w-full bg-gradient-to-r from-[#f7941d] to-[#f5b461] hover:from-[#f5b461] hover:to-[#f7941d] text-white font-bold py-3 rounded-xl transition-all shadow-lg text-center text-sm">
+                <i class="fas fa-user-circle mr-2"></i> View Full Profile
+            </a>
+
+            {{-- Logout --}}
+            <button onclick="confirmLogout()" class="w-full border-2 border-gray-300 hover:border-red-400 hover:bg-red-50 text-gray-700 hover:text-red-600 font-semibold py-3 rounded-xl transition-all text-center text-sm">
+                <i class="fas fa-sign-out-alt mr-2"></i> Log Out
+            </button>
+        </div>
+    </div>
     
     {{-- Toast Notifications Container --}}
     <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2"></div>
@@ -221,6 +300,43 @@
     <script>
         // CSRF Token for AJAX requests
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        // ====== PROFILE DROPDOWN FUNCTIONS ======
+        
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const overlay = document.getElementById('profileDropdownOverlay');
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                overlay.classList.remove('hidden');
+            } else {
+                closeProfileDropdown();
+            }
+        }
+
+        function closeProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const overlay = document.getElementById('profileDropdownOverlay');
+            dropdown.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }
+
+        function confirmLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                showToast('Logging out...', 'info');
+                window.location.href = '/logout';
+            }
+        }
+
+        // Close dropdown with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeProfileDropdown();
+            }
+        });
+        
+        // ====== END PROFILE DROPDOWN FUNCTIONS ======
         
         // Toast notification function
         function showToast(message, type = 'success') {
@@ -295,7 +411,7 @@
                 throw error;
             }
         }
-        
+
         // Logout function
         // function logout() {
         //    if (confirm('Are you sure you want to logout?')) {

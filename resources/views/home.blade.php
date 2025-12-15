@@ -2,6 +2,12 @@
 
 @section('title', 'Dashboard - MealMatch')
 
+@section('page-title')
+    <h1 class="text-5xl font-bold">
+        <span class="text-green-600">Dash</span><span class="text-orange-500">board</span>
+    </h1>
+@endsection
+
 @section('content')
 {{-- Today's Date --}}
 <h2 class="text-3xl font-bold text-gray-900 mb-6">

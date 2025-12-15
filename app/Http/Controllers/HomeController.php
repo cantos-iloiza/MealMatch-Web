@@ -23,7 +23,7 @@ class HomeController extends Controller
         
         // Initialize Firebase Admin SDK
         $this->firebase = (new Factory())
-            ->withServiceAccount(storage_path(env('FIREBASE_CREDENTIALS')))
+            ->withServiceAccount(storage_path(env('FIREBASE_CREDENTIALS_PATH')))
             ->createAuth();
     }
 
@@ -307,6 +307,10 @@ class HomeController extends Controller
                    ?? $request->bearerToken();
         
         if (!$idToken) {
+            return null;
+        }
+
+        if (!$this->firebase) {
             return null;
         }
 
