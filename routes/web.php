@@ -91,3 +91,5 @@ Route::get('/api/profile/highest-streak', [ProfileController::class, 'getHighest
 Route::get('/api/profile/average-calories', [ProfileController::class, 'getAverageCalories'])->name('profile.average.calories');
 Route::get('/api/profile/logs-by-date', [ProfileController::class, 'getLogsGroupedByCategory'])->name('profile.logs.by.date');
 Route::get('/api/profile/logs-range', [ProfileController::class, 'getLogsInRange'])->name('profile.logs.range');
+
+Route::get('/api/profile/logs-in-range', [ProfileController::class, 'getLogsInRange']);

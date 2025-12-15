@@ -59,10 +59,6 @@ function loadFakeProfile() {
     const name = 'Hermione';
     document.getElementById('userName').textContent = name;
     document.getElementById('userEmail').textContent = 'mealmatch03@email.com';
-    
-    // Set initials
-    const initials = name.split(' ').map(n => n[0]).join('');
-    document.getElementById('profileInitials').textContent = initials;
 }
 
 function loadFakeStreak() {
@@ -83,7 +79,7 @@ function loadFakeStreak() {
 }
 
 function loadFakeStats() {
-    document.getElementById('highestStreak').textContent = '2'; // Changed from 3 to 2
+    document.getElementById('highestStreak').textContent = '2';
     document.getElementById('avgCalories').textContent = '1850';
 }
 
@@ -130,16 +126,28 @@ function getFakeMealLogs() {
                 { id: 'log20', foodName: 'Nuts', calories: 200, carbs: 8, proteins: 6, fats: 18, serving: '30g', brand: '', category: 'Snacks', timestamp: new Date('2025-12-15T15:00:00'), isVerified: false, source: '' },
                 { id: 'log21', foodName: 'Fruit', calories: 250, carbs: 60, proteins: 2, fats: 0.5, serving: '1 apple', brand: '', category: 'Snacks', timestamp: new Date('2025-12-15T20:00:00'), isVerified: true, source: 'USDA' }
             ]
+        },
+        '2025-12-10': {
+            'Breakfast': [
+                { id: 'log22', foodName: 'Pancakes', calories: 350, carbs: 60, proteins: 8, fats: 10, serving: '3 pancakes', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-10T08:00:00'), isVerified: true, source: 'USDA' }
+            ],
+            'Lunch': [
+                { id: 'log23', foodName: 'Burger', calories: 550, carbs: 45, proteins: 30, fats: 25, serving: '1 burger', brand: '', category: 'Lunch', timestamp: new Date('2025-12-10T13:00:00'), isVerified: false, source: '' }
+            ],
+            'Dinner': [
+                { id: 'log24', foodName: 'Pizza', calories: 600, carbs: 70, proteins: 25, fats: 22, serving: '3 slices', brand: '', category: 'Dinner', timestamp: new Date('2025-12-10T19:00:00'), isVerified: true, source: 'USDA' }
+            ],
+            'Snacks': []
         }
     };
 }
 
-// Helper: Calculate total calories from meal logs (matches Flutter's calculateTotalCalories)
+// Helper: Calculate total calories from meal logs
 function calculateTotalCalories(logs) {
     return logs.reduce((sum, log) => sum + log.calories, 0);
 }
 
-// Helper: Get logs grouped by category for a date (matches Flutter's getLogsGroupedByCategory)
+// Helper: Get logs grouped by category for a date
 function getLogsGroupedByCategory(dateStr) {
     const allLogs = getFakeMealLogs();
     return allLogs[dateStr] || {
@@ -150,18 +158,14 @@ function getLogsGroupedByCategory(dateStr) {
     };
 }
 
-// ====== END FAKE DATA FUNCTIONS ======
-
 // ====== VIEW SWITCHING FUNCTIONS ======
 
 function loadTodayView() {
     currentView = 'today';
     updateFilterButtons('today');
     
-    // FAKE DATA - Get today's data (Monday, Dec 15)
     const todayData = getLogsGroupedByCategory('2025-12-15');
     
-    // Calculate totals
     const allLogs = [...todayData.Breakfast, ...todayData.Lunch, ...todayData.Dinner, ...todayData.Snacks];
     const totalLogged = calculateTotalCalories(allLogs);
     const goal = 2000;
@@ -185,7 +189,6 @@ function loadThisWeekView() {
     currentView = 'thisWeek';
     updateFilterButtons('thisWeek');
     
-    // FAKE DATA - Current week is Dec 14-20 (Sunday to Saturday)
     const fakeLogs = getFakeMealLogs();
     const weekDates = ['2025-12-14', '2025-12-15', '2025-12-16', '2025-12-17', '2025-12-18', '2025-12-19', '2025-12-20'];
     
@@ -224,13 +227,13 @@ function loadThisWeekView() {
 function updateFilterButtons(active) {
     const todayBtn = document.getElementById('todayBtn');
     const thisWeekBtn = document.getElementById('thisWeekBtn');
+    const customBtn = document.getElementById('customBtn');
     
     // Reset all
-    todayBtn.classList.remove('bg-[#6b9080]', 'text-white', 'active');
-    todayBtn.classList.add('bg-white', 'text-gray-700');
-    
-    thisWeekBtn.classList.remove('bg-[#6b9080]', 'text-white', 'active');
-    thisWeekBtn.classList.add('bg-white', 'text-gray-700');
+    [todayBtn, thisWeekBtn, customBtn].forEach(btn => {
+        btn.classList.remove('bg-[#6b9080]', 'text-white', 'active');
+        btn.classList.add('bg-white', 'text-gray-700');
+    });
     
     // Set active
     if (active === 'today') {
@@ -239,6 +242,9 @@ function updateFilterButtons(active) {
     } else if (active === 'thisWeek') {
         thisWeekBtn.classList.remove('bg-white', 'text-gray-700');
         thisWeekBtn.classList.add('bg-[#6b9080]', 'text-white', 'active');
+    } else if (active === 'custom') {
+        customBtn.classList.remove('bg-white', 'text-gray-700');
+        customBtn.classList.add('bg-[#6b9080]', 'text-white', 'active');
     }
 }
 
@@ -274,7 +280,6 @@ function renderTodayView(dayData) {
             
             <p class="text-gray-600 text-sm mb-4">${mealCount} of 4 meals logged today</p>
             
-            <!-- Calories Progress -->
             <div class="mb-8">
                 <div class="flex justify-between items-baseline mb-3">
                     <div>
@@ -291,7 +296,6 @@ function renderTodayView(dayData) {
                 </div>
             </div>
             
-            <!-- Meals Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 ${dayData.meals.Breakfast.length > 0 ? renderMealCard({type: 'Breakfast', totalCal: calculateTotalCalories(dayData.meals.Breakfast), foods: dayData.meals.Breakfast}) : ''}
                 ${dayData.meals.Lunch.length > 0 ? renderMealCard({type: 'Lunch', totalCal: calculateTotalCalories(dayData.meals.Lunch), foods: dayData.meals.Lunch}) : ''}
@@ -305,12 +309,19 @@ function renderTodayView(dayData) {
 function renderWeeklyOverview(weekData) {
     const container = document.getElementById('logContent');
     
-    const dateRange = `December ${weekData[0].dayNum} - ${weekData[weekData.length - 1].dayNum}, 2025`;
+    if (!weekData || weekData.length === 0) {
+        container.innerHTML = renderEmptyState();
+        return;
+    }
+    
+    const firstDate = new Date(weekData[0].date);
+    const lastDate = new Date(weekData[weekData.length - 1].date);
+    const dateRange = `${firstDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - ${lastDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
     
     container.innerHTML = `
         <div>
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Weekly Overview</h2>
+                <h2 class="text-2xl font-bold text-gray-800">${currentView === 'thisWeek' ? 'Weekly Overview' : 'Custom Date Range'}</h2>
                 <p class="text-gray-600 font-medium">${dateRange}</p>
             </div>
             
@@ -331,7 +342,6 @@ function renderDayCard(day) {
     return `
         <div class="bg-[#E8F5E9] rounded-2xl p-5 shadow-md hover:shadow-lg transition-all day-card">
             <div class="flex items-center gap-4">
-                <!-- Date Circle -->
                 <div class="flex-shrink-0">
                     <div class="w-16 h-16 rounded-2xl bg-[#FFF9E6] ${circleOpacity} text-black flex flex-col items-center justify-center shadow-md">
                         <span class="text-2xl font-bold">${day.dayNum}</span>
@@ -339,7 +349,6 @@ function renderDayCard(day) {
                     </div>
                 </div>
                 
-                <!-- Day Info -->
                 <div class="flex-1 min-w-0">
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="text-lg font-bold text-gray-800">${day.dayName}</h3>
@@ -348,7 +357,6 @@ function renderDayCard(day) {
                         </span>
                     </div>
                     
-                    <!-- Stats Row -->
                     <div class="grid grid-cols-3 gap-3 text-center text-sm mb-3">
                         <div>
                             <p class="text-gray-700 text-xs mb-1 font-medium">Goal</p>
@@ -364,7 +372,6 @@ function renderDayCard(day) {
                         </div>
                     </div>
                     
-                    <!-- Progress Bar -->
                     ${hasLogs ? `
                         <div class="h-2.5 bg-white rounded-full overflow-hidden">
                             <div class="h-full transition-all duration-500 rounded-full" style="width: ${progress}%; background-color: ${progressColor}"></div>
@@ -374,7 +381,6 @@ function renderDayCard(day) {
                     `}
                 </div>
                 
-                <!-- Arrow Button -->
                 ${hasLogs ? `
                     <button onclick="showDayDetail('${day.date}')" class="flex-shrink-0 w-10 h-10 rounded-xl bg-white hover:bg-[#6aa84f] text-gray-600 hover:text-white flex items-center justify-center transition-all shadow-md">
                         <i class="fas fa-chevron-right"></i>
@@ -385,9 +391,7 @@ function renderDayCard(day) {
     `;
 }
 
-// ====== MEAL CARD FUNCTION - MATCHES YOUR DESIGN ======
 function renderMealCard(meal) {
-    // Define meal icons
     const mealIcons = {
         'Breakfast': 'fa-sun',
         'Lunch': 'fa-mug-hot',
@@ -395,7 +399,6 @@ function renderMealCard(meal) {
         'Snacks': 'fa-apple-alt'
     };
     
-    // Define card background colors
     const cardClasses = {
         'Breakfast': 'breakfast-card',
         'Lunch': 'lunch-card',
@@ -403,7 +406,6 @@ function renderMealCard(meal) {
         'Snacks': 'snacks-card'
     };
     
-    // Define icon colors
     const iconClasses = {
         'Breakfast': 'breakfast-icon',
         'Lunch': 'lunch-icon',
@@ -417,7 +419,6 @@ function renderMealCard(meal) {
     
     return `
         <div class="meal-card ${cardClass}">
-            <!-- Header -->
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-4">
                     <div class="meal-icon-circle ${iconClass}">
@@ -434,7 +435,6 @@ function renderMealCard(meal) {
                 </button>
             </div>
             
-            <!-- Food Items -->
             <div>
                 ${meal.foods.map(food => `
                     <div class="food-item-row">
@@ -473,7 +473,6 @@ function renderEmptyState() {
 // ====== MODAL FUNCTIONS ======
 
 function showDayDetail(dateStr) {
-    // FAKE DATA - Get day data
     const dayData = weeklyData.find(d => d.date === dateStr);
     
     if (!dayData || !dayData.meals) return;
@@ -485,7 +484,9 @@ function showDayDetail(dateStr) {
     const title = document.getElementById('modalDayTitle');
     const content = document.getElementById('dayDetailContent');
     
-    title.textContent = `${dayData.dayName}, December ${dayData.dayNum}`;
+    const date = new Date(dayData.date);
+    const formattedDate = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    title.textContent = formattedDate;
     
     const progress = Math.min((dayData.logged / dayData.goal) * 100, 100);
     const progressColor = dayData.status === 'Over Goal' ? '#ff0000' : '#ff9800';
@@ -499,7 +500,6 @@ function showDayDetail(dateStr) {
                 </span>
             </div>
             
-            <!-- Calories Progress -->
             <div class="mb-6">
                 <div class="flex justify-between items-baseline mb-3">
                     <div>
@@ -518,7 +518,6 @@ function showDayDetail(dateStr) {
             
             <h3 class="text-xl font-bold text-gray-800 mb-4">Food Log Details</h3>
             
-            <!-- Meals List -->
             <div class="space-y-4">
                 ${dayData.meals.Breakfast.length > 0 ? renderMealDetailCard({type: 'Breakfast', totalCal: calculateTotalCalories(dayData.meals.Breakfast), foods: dayData.meals.Breakfast}) : ''}
                 ${dayData.meals.Lunch.length > 0 ? renderMealDetailCard({type: 'Lunch', totalCal: calculateTotalCalories(dayData.meals.Lunch), foods: dayData.meals.Lunch}) : ''}
@@ -588,7 +587,6 @@ function closeDayDetail() {
 
 // ====== HELPER FUNCTIONS ======
 
-// Format date as YYYY-MM-DD (matches Flutter)
 function _formatDate(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -648,6 +646,17 @@ window.updateDateRange = async function() {
     updateFilterButtons('custom');
     
     try {
+        // Show loading
+        const container = document.getElementById('logContent');
+        container.innerHTML = `
+            <div class="text-center py-24">
+                <div class="mb-6">
+                    <i class="fas fa-spinner fa-spin text-[#6b9080] text-6xl"></i>
+                </div>
+                <p class="text-gray-600 text-lg">Loading logs...</p>
+            </div>
+        `;
+        
         // Call backend API to get logs in date range
         const response = await fetch(`/api/profile/logs-in-range?start_date=${fromDateStr}&end_date=${toDateStr}`);
         const result = await response.json();
@@ -701,5 +710,7 @@ window.updateDateRange = async function() {
     } catch (error) {
         console.error('Error loading custom date range:', error);
         alert('Error loading logs for selected dates. Please try again.');
+        // Reload today view on error
+        loadTodayView();
     }
 };
