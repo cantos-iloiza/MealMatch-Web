@@ -173,7 +173,7 @@ function loadRecipes() {
                     renderRecipes('cook-again-recipes', data.cookAgainRecipes);
                 }
                 
-                renderRecipes('Suggested-Recipes", data.suggestedRecipes);
+                renderRecipes('Suggested-Recipes', data.suggestedRecipes);
                 renderRecipes('try-these-recipes', data.tryTheseRecipes);
                 renderRecipes('protein-recipes', data.proteinRecipes);
             }

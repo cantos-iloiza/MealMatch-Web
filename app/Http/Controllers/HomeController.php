@@ -22,8 +22,8 @@ class HomeController extends Controller
         $this->mealDBService = $mealDBService;
         
         // Initialize Firebase Admin SDK
-        $this->firebase = (new Factory)
-            ->withServiceAccount(config('firebase.credentials.file'))
+        $this->firebase = (new Factory())
+            ->withServiceAccount(storage_path(env('FIREBASE_CREDENTIALS_PATH')))
             ->createAuth();
     }
 
@@ -224,10 +224,19 @@ class HomeController extends Controller
             ->get();
         
         $recipes = [];
-        foreach ($frequentRecipes as $log) {
-            $details = $this->mealDBService->getMealDetails($log->recipe_id);
-            if ($details) {
-                $recipes[] = $details;
+        foreach ($frequentRecipes as $index => $log) {
+            // Add timeout protection - stop after 3 recipes or 5 seconds
+            if ($index >= 3 || count($recipes) >= 3) {
+                break;
+            }
+            
+            try {
+                $details = $this->mealDBService->getMealDetails($log->recipe_id);
+                if ($details) {
+                    $recipes[] = $details;
+                }
+            } catch (\Exception $e) {
+                continue; // Skip failed requests
             }
         }
         
