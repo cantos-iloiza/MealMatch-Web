@@ -56,9 +56,9 @@ function loadFakeData() {
 }
 
 function loadFakeProfile() {
-    const name = 'Juan Dela Cruz';
+    const name = 'Hermione';
     document.getElementById('userName').textContent = name;
-    document.getElementById('userEmail').textContent = 'juandelacruz@email.com';
+    document.getElementById('userEmail').textContent = 'mealmatch03@email.com';
     
     // Set initials
     const initials = name.split(' ').map(n => n[0]).join('');
@@ -66,13 +66,13 @@ function loadFakeProfile() {
 }
 
 function loadFakeStreak() {
-    const streakDays = 5;
+    const streakDays = 2; // Only 2 days this week (Sunday Dec 14 and Monday Dec 15)
     document.getElementById('streakText').textContent = `${streakDays} days logged`;
     
-    // Update circles
+    // Update circles - only first 2 circles (S and M) should be orange
     const circles = document.querySelectorAll('.day-circle');
     circles.forEach((circle, index) => {
-        if (index < streakDays) {
+        if (index < 2) { // Only circles 1 and 2 (index 0 and 1)
             circle.classList.remove('bg-white/50', 'text-gray-400');
             circle.classList.add('bg-[#f7941d]', 'text-white');
         } else {
@@ -83,130 +83,52 @@ function loadFakeStreak() {
 }
 
 function loadFakeStats() {
-    document.getElementById('highestStreak').textContent = '21';
+    document.getElementById('highestStreak').textContent = '2'; // Changed from 3 to 2
     document.getElementById('avgCalories').textContent = '1850';
 }
 
 // FAKE DATA - Mimics Flutter's meal_logs structure
 function getFakeMealLogs() {
     return {
-        '2025-12-08': {
-            'Breakfast': [
-                { id: 'log1', foodName: 'Scrambled Eggs', calories: 200, carbs: 2, proteins: 12, fats: 15, serving: '2 eggs', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-08T07:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log2', foodName: 'Whole Wheat Toast', calories: 150, carbs: 28, proteins: 6, fats: 2, serving: '2 slices', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-08T07:05:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log3', foodName: 'Chicken Salad', calories: 350, carbs: 15, proteins: 30, fats: 18, serving: '1 bowl', brand: '', category: 'Lunch', timestamp: new Date('2025-12-08T12:00:00'), isVerified: false, source: '' },
-                { id: 'log4', foodName: 'Rice', calories: 200, carbs: 45, proteins: 4, fats: 0.5, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-08T12:10:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Dinner': [
-                { id: 'log5', foodName: 'Grilled Fish', calories: 400, carbs: 0, proteins: 45, fats: 22, serving: '200g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-08T18:00:00'), isVerified: true, source: 'OFF' },
-                { id: 'log6', foodName: 'Vegetables', calories: 100, carbs: 20, proteins: 3, fats: 1, serving: '1 cup', brand: '', category: 'Dinner', timestamp: new Date('2025-12-08T18:15:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Snacks': [
-                { id: 'log7', foodName: 'Nuts', calories: 200, carbs: 8, proteins: 6, fats: 18, serving: '30g', brand: '', category: 'Snacks', timestamp: new Date('2025-12-08T15:00:00'), isVerified: false, source: '' },
-                { id: 'log8', foodName: 'Fruit', calories: 250, carbs: 60, proteins: 2, fats: 0.5, serving: '1 apple', brand: '', category: 'Snacks', timestamp: new Date('2025-12-08T20:00:00'), isVerified: true, source: 'USDA' }
-            ]
-        },
-        '2025-12-09': {
-            'Breakfast': [
-                { id: 'log9', foodName: 'Pancakes', calories: 300, carbs: 50, proteins: 8, fats: 8, serving: '3 pieces', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-09T07:30:00'), isVerified: false, source: '' },
-                { id: 'log10', foodName: 'Maple Syrup', calories: 100, carbs: 26, proteins: 0, fats: 0, serving: '2 tbsp', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-09T07:35:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log11', foodName: 'Burger', calories: 500, carbs: 40, proteins: 28, fats: 25, serving: '1 burger', brand: 'McDonalds', category: 'Lunch', timestamp: new Date('2025-12-09T13:00:00'), isVerified: true, source: 'OFF' },
-                { id: 'log12', foodName: 'Fries', calories: 200, carbs: 30, proteins: 3, fats: 10, serving: 'medium', brand: 'McDonalds', category: 'Lunch', timestamp: new Date('2025-12-09T13:05:00'), isVerified: true, source: 'OFF' }
-            ],
-            'Dinner': [
-                { id: 'log13', foodName: 'Pasta', calories: 450, carbs: 70, proteins: 15, fats: 12, serving: '1 plate', brand: '', category: 'Dinner', timestamp: new Date('2025-12-09T19:00:00'), isVerified: false, source: '' },
-                { id: 'log14', foodName: 'Garlic Bread', calories: 150, carbs: 20, proteins: 4, fats: 6, serving: '2 slices', brand: '', category: 'Dinner', timestamp: new Date('2025-12-09T19:10:00'), isVerified: false, source: '' }
-            ],
-            'Snacks': [
-                { id: 'log15', foodName: 'Chips', calories: 250, carbs: 32, proteins: 3, fats: 15, serving: '1 bag', brand: 'Lays', category: 'Snacks', timestamp: new Date('2025-12-09T16:00:00'), isVerified: true, source: 'OFF' },
-                { id: 'log16', foodName: 'Soda', calories: 150, carbs: 39, proteins: 0, fats: 0, serving: '355ml', brand: 'Coca-Cola', category: 'Snacks', timestamp: new Date('2025-12-09T16:05:00'), isVerified: true, source: 'OFF' }
-            ]
-        },
-        '2025-12-10': {
-            'Breakfast': [
-                { id: 'log17', foodName: 'Oatmeal', calories: 150, carbs: 27, proteins: 5, fats: 3, serving: '1 bowl', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-10T07:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log18', foodName: 'Berries', calories: 70, carbs: 17, proteins: 1, fats: 0.5, serving: '1/2 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-10T07:05:00'), isVerified: true, source: 'USDA' },
-                { id: 'log19', foodName: 'Honey', calories: 100, carbs: 26, proteins: 0, fats: 0, serving: '1 tbsp', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-10T07:10:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log20', foodName: 'Chicken Wrap', calories: 450, carbs: 45, proteins: 30, fats: 18, serving: '1 wrap', brand: '', category: 'Lunch', timestamp: new Date('2025-12-10T12:30:00'), isVerified: false, source: '' },
-                { id: 'log21', foodName: 'Side Salad', calories: 150, carbs: 10, proteins: 3, fats: 8, serving: '1 bowl', brand: '', category: 'Lunch', timestamp: new Date('2025-12-10T12:40:00'), isVerified: false, source: '' }
-            ],
-            'Dinner': [
-                { id: 'log22', foodName: 'Steak', calories: 500, carbs: 0, proteins: 50, fats: 30, serving: '200g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-10T19:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log23', foodName: 'Mashed Potatoes', calories: 200, carbs: 35, proteins: 4, fats: 6, serving: '1 cup', brand: '', category: 'Dinner', timestamp: new Date('2025-12-10T19:15:00'), isVerified: false, source: '' }
-            ],
-            'Snacks': [
-                { id: 'log24', foodName: 'Protein Bar', calories: 200, carbs: 20, proteins: 20, fats: 8, serving: '1 bar', brand: 'Quest', category: 'Snacks', timestamp: new Date('2025-12-10T15:00:00'), isVerified: true, source: 'OFF' },
-                { id: 'log25', foodName: 'Apple', calories: 100, carbs: 25, proteins: 0, fats: 0, serving: '1 medium', brand: '', category: 'Snacks', timestamp: new Date('2025-12-10T21:00:00'), isVerified: true, source: 'USDA' }
-            ]
-        },
-        '2025-12-11': {
-            'Breakfast': [
-                { id: 'log26', foodName: 'Yogurt', calories: 150, carbs: 20, proteins: 10, fats: 4, serving: '1 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-11T07:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log27', foodName: 'Granola', calories: 130, carbs: 18, proteins: 3, fats: 5, serving: '1/4 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-11T07:05:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log28', foodName: 'Sushi Roll', calories: 350, carbs: 50, proteins: 15, fats: 10, serving: '8 pieces', brand: '', category: 'Lunch', timestamp: new Date('2025-12-11T13:00:00'), isVerified: false, source: '' },
-                { id: 'log29', foodName: 'Miso Soup', calories: 150, carbs: 8, proteins: 8, fats: 6, serving: '1 bowl', brand: '', category: 'Lunch', timestamp: new Date('2025-12-11T13:10:00'), isVerified: true, source: 'OFF' }
-            ],
-            'Dinner': [
-                { id: 'log30', foodName: 'Roast Chicken', calories: 500, carbs: 0, proteins: 55, fats: 28, serving: '250g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-11T18:30:00'), isVerified: true, source: 'USDA' },
-                { id: 'log31', foodName: 'Roasted Vegetables', calories: 200, carbs: 30, proteins: 5, fats: 8, serving: '1.5 cups', brand: '', category: 'Dinner', timestamp: new Date('2025-12-11T18:45:00'), isVerified: false, source: '' }
-            ],
-            'Snacks': [
-                { id: 'log32', foodName: 'Trail Mix', calories: 200, carbs: 18, proteins: 6, fats: 14, serving: '1/4 cup', brand: '', category: 'Snacks', timestamp: new Date('2025-12-11T16:00:00'), isVerified: false, source: '' },
-                { id: 'log33', foodName: 'Orange', calories: 100, carbs: 23, proteins: 1, fats: 0, serving: '1 medium', brand: '', category: 'Snacks', timestamp: new Date('2025-12-11T20:30:00'), isVerified: true, source: 'USDA' }
-            ]
-        },
-        '2025-12-12': {
-            'Breakfast': [
-                { id: 'log34', foodName: 'French Toast', calories: 250, carbs: 35, proteins: 10, fats: 8, serving: '2 slices', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-12T08:00:00'), isVerified: false, source: '' },
-                { id: 'log35', foodName: 'Bacon', calories: 100, carbs: 0, proteins: 6, fats: 8, serving: '2 strips', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-12T08:10:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log36', foodName: 'Caesar Salad', calories: 400, carbs: 15, proteins: 25, fats: 28, serving: '1 large bowl', brand: '', category: 'Lunch', timestamp: new Date('2025-12-12T12:00:00'), isVerified: false, source: '' },
-                { id: 'log37', foodName: 'Breadsticks', calories: 200, carbs: 35, proteins: 6, fats: 4, serving: '2 pieces', brand: '', category: 'Lunch', timestamp: new Date('2025-12-12T12:15:00'), isVerified: false, source: '' }
-            ],
-            'Dinner': [
-                { id: 'log38', foodName: 'Pizza', calories: 600, carbs: 70, proteins: 25, fats: 25, serving: '3 slices', brand: 'Pizza Hut', category: 'Dinner', timestamp: new Date('2025-12-12T19:30:00'), isVerified: true, source: 'OFF' },
-                { id: 'log39', foodName: 'Salad', calories: 100, carbs: 12, proteins: 2, fats: 5, serving: '1 bowl', brand: '', category: 'Dinner', timestamp: new Date('2025-12-12T19:45:00'), isVerified: false, source: '' }
-            ],
-            'Snacks': [
-                { id: 'log40', foodName: 'Popcorn', calories: 150, carbs: 30, proteins: 3, fats: 3, serving: '3 cups', brand: '', category: 'Snacks', timestamp: new Date('2025-12-12T16:00:00'), isVerified: false, source: '' },
-                { id: 'log41', foodName: 'Chocolate', calories: 150, carbs: 18, proteins: 2, fats: 9, serving: '1 bar', brand: 'Hersheys', category: 'Snacks', timestamp: new Date('2025-12-12T21:00:00'), isVerified: true, source: 'OFF' }
-            ]
-        },
-        '2025-12-13': {
-            'Breakfast': [],
-            'Lunch': [],
-            'Dinner': [],
-            'Snacks': []
-        },
         '2025-12-14': {
             'Breakfast': [
-                { id: 'log42', foodName: 'Oatmeal with Blueberries', calories: 150, carbs: 27, proteins: 5, fats: 3, serving: '1 bowl', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log43', foodName: 'Banana', calories: 105, carbs: 27, proteins: 1, fats: 0, serving: '1 medium', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:10:00'), isVerified: true, source: 'USDA' },
-                { id: 'log44', foodName: 'Black Coffee', calories: 5, carbs: 0, proteins: 0, fats: 0, serving: '1 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:15:00'), isVerified: true, source: 'USDA' }
+                { id: 'log1', foodName: 'Oatmeal with Blueberries', calories: 150, carbs: 27, proteins: 5, fats: 3, serving: '1 bowl', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:00:00'), isVerified: true, source: 'USDA' },
+                { id: 'log2', foodName: 'Banana', calories: 105, carbs: 27, proteins: 1, fats: 0, serving: '1 medium', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:10:00'), isVerified: true, source: 'USDA' },
+                { id: 'log3', foodName: 'Black Coffee', calories: 5, carbs: 0, proteins: 0, fats: 0, serving: '1 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:15:00'), isVerified: true, source: 'USDA' }
             ],
             'Lunch': [
-                { id: 'log45', foodName: 'Grilled Chicken Breast', calories: 284, carbs: 0, proteins: 53, fats: 6, serving: '200g', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:30:00'), isVerified: true, source: 'USDA' },
-                { id: 'log46', foodName: 'Brown Rice', calories: 216, carbs: 45, proteins: 5, fats: 2, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:35:00'), isVerified: true, source: 'USDA' },
-                { id: 'log47', foodName: 'Steamed Broccoli', calories: 55, carbs: 11, proteins: 4, fats: 0.5, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:40:00'), isVerified: true, source: 'USDA' }
+                { id: 'log4', foodName: 'Grilled Chicken Breast', calories: 284, carbs: 0, proteins: 53, fats: 6, serving: '200g', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:30:00'), isVerified: true, source: 'USDA' },
+                { id: 'log5', foodName: 'Brown Rice', calories: 216, carbs: 45, proteins: 5, fats: 2, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:35:00'), isVerified: true, source: 'USDA' },
+                { id: 'log6', foodName: 'Steamed Broccoli', calories: 55, carbs: 11, proteins: 4, fats: 0.5, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:40:00'), isVerified: true, source: 'USDA' }
             ],
             'Dinner': [
-                { id: 'log48', foodName: 'Baked Salmon', calories: 367, carbs: 0, proteins: 40, fats: 22, serving: '150g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log49', foodName: 'Roasted Sweet Potato', calories: 112, carbs: 26, proteins: 2, fats: 0, serving: '1 medium', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:15:00'), isVerified: true, source: 'USDA' },
-                { id: 'log50', foodName: 'Grilled Asparagus', calories: 40, carbs: 8, proteins: 4, fats: 0, serving: '6 spears', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:20:00'), isVerified: true, source: 'USDA' }
+                { id: 'log7', foodName: 'Baked Salmon', calories: 367, carbs: 0, proteins: 40, fats: 22, serving: '150g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:00:00'), isVerified: true, source: 'USDA' },
+                { id: 'log8', foodName: 'Roasted Sweet Potato', calories: 112, carbs: 26, proteins: 2, fats: 0, serving: '1 medium', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:15:00'), isVerified: true, source: 'USDA' },
+                { id: 'log9', foodName: 'Grilled Asparagus', calories: 40, carbs: 8, proteins: 4, fats: 0, serving: '6 spears', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:20:00'), isVerified: true, source: 'USDA' }
             ],
             'Snacks': [
-                { id: 'log51', foodName: 'Apple', calories: 95, carbs: 25, proteins: 0, fats: 0, serving: '1 medium', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T15:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log52', foodName: 'Almonds (1 oz)', calories: 164, carbs: 6, proteins: 6, fats: 14, serving: '23 almonds', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T17:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log53', foodName: 'Greek Yogurt', calories: 84, carbs: 6, proteins: 15, fats: 0, serving: '170g', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T20:00:00'), isVerified: true, source: 'USDA' }
+                { id: 'log10', foodName: 'Apple', calories: 95, carbs: 25, proteins: 0, fats: 0, serving: '1 medium', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T15:00:00'), isVerified: true, source: 'USDA' },
+                { id: 'log11', foodName: 'Almonds (1 oz)', calories: 164, carbs: 6, proteins: 6, fats: 14, serving: '23 almonds', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T17:00:00'), isVerified: true, source: 'USDA' },
+                { id: 'log12', foodName: 'Greek Yogurt', calories: 84, carbs: 6, proteins: 15, fats: 0, serving: '170g', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T20:00:00'), isVerified: true, source: 'USDA' }
+            ]
+        },
+        '2025-12-15': {
+            'Breakfast': [
+                { id: 'log13', foodName: 'Scrambled Eggs', calories: 200, carbs: 2, proteins: 12, fats: 15, serving: '2 eggs', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-15T07:00:00'), isVerified: true, source: 'USDA' },
+                { id: 'log14', foodName: 'Whole Wheat Toast', calories: 150, carbs: 28, proteins: 6, fats: 2, serving: '2 slices', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-15T07:05:00'), isVerified: true, source: 'USDA' },
+                { id: 'log15', foodName: 'Orange Juice', calories: 110, carbs: 26, proteins: 2, fats: 0, serving: '1 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-15T07:10:00'), isVerified: true, source: 'USDA' }
+            ],
+            'Lunch': [
+                { id: 'log16', foodName: 'Chicken Salad', calories: 350, carbs: 15, proteins: 30, fats: 18, serving: '1 bowl', brand: '', category: 'Lunch', timestamp: new Date('2025-12-15T12:00:00'), isVerified: false, source: '' },
+                { id: 'log17', foodName: 'Rice', calories: 200, carbs: 45, proteins: 4, fats: 0.5, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-15T12:10:00'), isVerified: true, source: 'USDA' }
+            ],
+            'Dinner': [
+                { id: 'log18', foodName: 'Grilled Fish', calories: 400, carbs: 0, proteins: 45, fats: 22, serving: '200g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-15T18:00:00'), isVerified: true, source: 'OFF' },
+                { id: 'log19', foodName: 'Vegetables', calories: 100, carbs: 20, proteins: 3, fats: 1, serving: '1 cup', brand: '', category: 'Dinner', timestamp: new Date('2025-12-15T18:15:00'), isVerified: true, source: 'USDA' }
+            ],
+            'Snacks': [
+                { id: 'log20', foodName: 'Nuts', calories: 200, carbs: 8, proteins: 6, fats: 18, serving: '30g', brand: '', category: 'Snacks', timestamp: new Date('2025-12-15T15:00:00'), isVerified: false, source: '' },
+                { id: 'log21', foodName: 'Fruit', calories: 250, carbs: 60, proteins: 2, fats: 0.5, serving: '1 apple', brand: '', category: 'Snacks', timestamp: new Date('2025-12-15T20:00:00'), isVerified: true, source: 'USDA' }
             ]
         }
     };
@@ -230,283 +152,14 @@ function getLogsGroupedByCategory(dateStr) {
 
 // ====== END FAKE DATA FUNCTIONS ======
 
-// ====== REAL FIREBASE FUNCTIONS (COMMENTED) ======
-/* 
- * ========================================
- * UNCOMMENT THIS SECTION TO USE REAL FIREBASE DATA
- * ========================================
- * Make sure you have:
- * 1. Uncommented Firebase imports at the top
- * 2. Set up firebase.js config file
- * 3. Updated currentUserId to use real auth
- * ========================================
- */
-
-/* 
-async function loadRealData() {
-    try {
-        await loadProfileFromFirebase();
-        await loadStreakFromFirebase();
-        await loadStatsFromFirebase();
-        loadTodayView();
-    } catch (error) {
-        console.error('Error loading real data:', error);
-    }
-}
-
-async function loadProfileFromFirebase() {
-    const userDocRef = doc(db, 'users', currentUserId);
-    const userDoc = await getDoc(userDocRef);
-    
-    if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const name = userData.name || 'User';
-        
-        document.getElementById('userName').textContent = name;
-        document.getElementById('userEmail').textContent = userData.email || 'email@example.com';
-        
-        const initials = name.split(' ').map(n => n[0]).join('');
-        document.getElementById('profileInitials').textContent = initials;
-    }
-}
-
-// Matches Flutter: Calculate weekly streak based on unique login days
-async function loadStreakFromFirebase() {
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    // Get Sunday of current week
-    const dayOfWeek = today.getDay(); // 0 = Sunday
-    startOfWeek.setDate(today.getDate() - dayOfWeek);
-    startOfWeek.setHours(0, 0, 0, 0);
-    
-    const mealLogsRef = collection(db, 'users', currentUserId, 'meal_logs');
-    const q = query(
-        mealLogsRef,
-        where('date', '>=', _formatDate(startOfWeek)),
-        where('date', '<=', _formatDate(today))
-    );
-    
-    const logsSnapshot = await getDocs(q);
-    const uniqueDays = new Set();
-    
-    logsSnapshot.forEach(doc => {
-        const data = doc.data();
-        uniqueDays.add(data.date);
-    });
-    
-    const streakDays = uniqueDays.size;
-    document.getElementById('streakText').textContent = `${streakDays} days logged`;
-    
-    // Update circles
-    const circles = document.querySelectorAll('.day-circle');
-    circles.forEach((circle, index) => {
-        if (index < streakDays) {
-            circle.classList.remove('bg-white/50', 'text-gray-400');
-            circle.classList.add('bg-[#f7941d]', 'text-white');
-        } else {
-            circle.classList.remove('bg-[#f7941d]', 'text-white');
-            circle.classList.add('bg-white/50', 'text-gray-400');
-        }
-    });
-}
-
-async function loadStatsFromFirebase() {
-    // Load highest streak from userStats (if you have this collection)
-    // For now, calculate from meal_logs
-    
-    // Get user's calorie goal
-    const userDocRef = doc(db, 'users', currentUserId);
-    const userDoc = await getDoc(userDocRef);
-    
-    if (userDoc.exists()) {
-        const userData = userDoc.data();
-        // Assuming highest streak is stored in user document
-        document.getElementById('highestStreak').textContent = userData.highestStreak || 0;
-    }
-    
-    // Calculate average calories from last 30 days
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const mealLogsRef = collection(db, 'users', currentUserId, 'meal_logs');
-    const q = query(
-        mealLogsRef,
-        where('date', '>=', _formatDate(thirtyDaysAgo))
-    );
-    
-    const logsSnapshot = await getDocs(q);
-    const dailyTotals = {};
-    
-    logsSnapshot.forEach(doc => {
-        const data = doc.data();
-        const dateKey = data.date;
-        if (!dailyTotals[dateKey]) {
-            dailyTotals[dateKey] = 0;
-        }
-        dailyTotals[dateKey] += data.calories || 0;
-    });
-    
-    const days = Object.keys(dailyTotals);
-    const totalCalories = Object.values(dailyTotals).reduce((sum, cal) => sum + cal, 0);
-    const avgCalories = days.length > 0 ? Math.round(totalCalories / days.length) : 0;
-    
-    document.getElementById('avgCalories').textContent = avgCalories;
-}
-
-// Matches Flutter: getLogsGroupedByCategory(date)
-async function loadLogsForDate(date) {
-    const dateKey = _formatDate(date);
-    
-    // Check cache first
-    if (foodLogsCache[dateKey]) {
-        return foodLogsCache[dateKey];
-    }
-    
-    try {
-        const mealLogsRef = collection(db, 'users', currentUserId, 'meal_logs');
-        const q = query(
-            mealLogsRef,
-            where('date', '==', dateKey)
-        );
-        
-        const logsSnapshot = await getDocs(q);
-        const grouped = {
-            'Breakfast': [],
-            'Lunch': [],
-            'Dinner': [],
-            'Snacks': []
-        };
-        
-        logsSnapshot.forEach(doc => {
-            const data = doc.data();
-            const log = {
-                id: doc.id,
-                foodName: data.foodName || 'Unknown Food',
-                calories: data.calories || 0,
-                carbs: data.carbs || 0,
-                proteins: data.proteins || 0,
-                fats: data.fats || 0,
-                serving: data.serving || '',
-                brand: data.brand || '',
-                category: data.category || 'Snacks',
-                timestamp: data.timestamp?.toDate() || new Date(data.date),
-                isVerified: data.isVerified || false,
-                source: data.source || ''
-            };
-            
-            if (grouped[log.category]) {
-                grouped[log.category].push(log);
-            }
-        });
-        
-        // Sort by timestamp (newest first)
-        Object.keys(grouped).forEach(category => {
-            grouped[category].sort((a, b) => b.timestamp - a.timestamp);
-        });
-        
-        foodLogsCache[dateKey] = grouped;
-        return grouped;
-        
-    } catch (error) {
-        console.error('Error loading logs for date:', dateKey, error);
-        return {
-            'Breakfast': [],
-            'Lunch': [],
-            'Dinner': [],
-            'Snacks': []
-        };
-    }
-}
-
-// Matches Flutter: getLogsInRange(start, end)
-async function loadLogsInRange(startDate, endDate) {
-    try {
-        // Generate all date strings in range
-        const dateStrings = [];
-        let current = new Date(startDate);
-        const end = new Date(endDate);
-        
-        while (current <= end) {
-            dateStrings.push(_formatDate(current));
-            current.setDate(current.getDate() + 1);
-        }
-        
-        // Firestore has limit of 10 for 'in' queries, so batch if needed
-        const allLogs = {};
-        
-        for (const dateStr of dateStrings) {
-            // Check cache first
-            if (foodLogsCache[dateStr]) {
-                allLogs[dateStr] = foodLogsCache[dateStr];
-                continue;
-            }
-            
-            const mealLogsRef = collection(db, 'users', currentUserId, 'meal_logs');
-            const q = query(
-                mealLogsRef,
-                where('date', '==', dateStr)
-            );
-            
-            const logsSnapshot = await getDocs(q);
-            const grouped = {
-                'Breakfast': [],
-                'Lunch': [],
-                'Dinner': [],
-                'Snacks': []
-            };
-            
-            logsSnapshot.forEach(doc => {
-                const data = doc.data();
-                const log = {
-                    id: doc.id,
-                    foodName: data.foodName || 'Unknown Food',
-                    calories: data.calories || 0,
-                    carbs: data.carbs || 0,
-                    proteins: data.proteins || 0,
-                    fats: data.fats || 0,
-                    serving: data.serving || '',
-                    brand: data.brand || '',
-                    category: data.category || 'Snacks',
-                    timestamp: data.timestamp?.toDate() || new Date(data.date),
-                    isVerified: data.isVerified || false,
-                    source: data.source || ''
-                };
-                
-                if (grouped[log.category]) {
-                    grouped[log.category].push(log);
-                }
-            });
-            
-            // Sort by timestamp
-            Object.keys(grouped).forEach(category => {
-                grouped[category].sort((a, b) => b.timestamp - a.timestamp);
-            });
-            
-            foodLogsCache[dateStr] = grouped;
-            allLogs[dateStr] = grouped;
-        }
-        
-        return allLogs;
-        
-    } catch (error) {
-        console.error('Error loading logs in range:', error);
-        return {};
-    }
-}
-*/
-
-/* ========================================
- * END REAL FIREBASE FUNCTIONS
- * ======================================== */
-
 // ====== VIEW SWITCHING FUNCTIONS ======
 
 function loadTodayView() {
     currentView = 'today';
-    updateFilterButtons('today'); // ← IMPORTANTE ITO!
+    updateFilterButtons('today');
     
-    // FAKE DATA - Get today's data (Sunday, Dec 14)
-    const todayData = getLogsGroupedByCategory('2025-12-14');
+    // FAKE DATA - Get today's data (Monday, Dec 15)
+    const todayData = getLogsGroupedByCategory('2025-12-15');
     
     // Calculate totals
     const allLogs = [...todayData.Breakfast, ...todayData.Lunch, ...todayData.Dinner, ...todayData.Snacks];
@@ -516,9 +169,9 @@ function loadTodayView() {
     const status = totalLogged > goal ? 'Over Goal' : 'On Track';
     
     renderTodayView({
-        date: '2025-12-14',
-        dayName: 'Sunday',
-        dayNum: 14,
+        date: '2025-12-15',
+        dayName: 'Monday',
+        dayNum: 15,
         month: 'Dec',
         goal: goal,
         logged: totalLogged,
@@ -526,48 +179,23 @@ function loadTodayView() {
         status: status,
         meals: todayData
     });
-    
-    /* ====== FIREBASE VERSION (COMMENTED) ======
-    const today = new Date();
-    await loadLogsForDate(today);
-    const dateKey = _formatDate(today);
-    const todayData = foodLogsCache[dateKey];
-    
-    const allLogs = [...todayData.Breakfast, ...todayData.Lunch, ...todayData.Dinner, ...todayData.Snacks];
-    const totalLogged = calculateTotalCalories(allLogs);
-    
-    // Get user's goal from Firestore
-    const userDocRef = doc(db, 'users', currentUserId);
-    const userDoc = await getDoc(userDocRef);
-    const goal = userDoc.exists() ? (userDoc.data().goalCalories || 2000) : 2000;
-    
-    const remaining = goal - totalLogged;
-    const status = totalLogged > goal ? 'Over Goal' : 'On Track';
-    
-    renderTodayView({
-        date: dateKey,
-        dayName: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()],
-        dayNum: today.getDate(),
-        month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][today.getMonth()],
-        goal: goal,
-        logged: totalLogged,
-        remaining: remaining,
-        status: status,
-        meals: todayData
-    });
-    */
 }
 
 function loadThisWeekView() {
     currentView = 'thisWeek';
     updateFilterButtons('thisWeek');
     
-    // FAKE DATA - Generate weekly summary
+    // FAKE DATA - Current week is Dec 14-20 (Sunday to Saturday)
     const fakeLogs = getFakeMealLogs();
-    const weekDates = ['2025-12-08', '2025-12-09', '2025-12-10', '2025-12-11', '2025-12-12', '2025-12-13', '2025-12-14'];
+    const weekDates = ['2025-12-14', '2025-12-15', '2025-12-16', '2025-12-17', '2025-12-18', '2025-12-19', '2025-12-20'];
     
     weeklyData = weekDates.map(dateStr => {
-        const meals = fakeLogs[dateStr];
+        const meals = fakeLogs[dateStr] || {
+            'Breakfast': [],
+            'Lunch': [],
+            'Dinner': [],
+            'Snacks': []
+        };
         const allLogs = [...meals.Breakfast, ...meals.Lunch, ...meals.Dinner, ...meals.Snacks];
         const totalLogged = calculateTotalCalories(allLogs);
         const goal = 2000;
@@ -591,57 +219,6 @@ function loadThisWeekView() {
     });
     
     renderWeeklyOverview(weeklyData);
-    
-    /* ====== FIREBASE VERSION (COMMENTED) ======
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    const dayOfWeek = today.getDay();
-    startOfWeek.setDate(today.getDate() - dayOfWeek);
-    startOfWeek.setHours(0, 0, 0, 0);
-    
-    const endOfWeek = new Date(today);
-    endOfWeek.setHours(23, 59, 59, 999);
-    
-    await loadLogsInRange(startOfWeek, endOfWeek);
-    
-    // Generate summary for each day
-    const dateStrings = [];
-    let current = new Date(startOfWeek);
-    while (current <= endOfWeek) {
-        dateStrings.push(_formatDate(current));
-        current.setDate(current.getDate() + 1);
-    }
-    
-    // Get user's goal
-    const userDocRef = doc(db, 'users', currentUserId);
-    const userDoc = await getDoc(userDocRef);
-    const goal = userDoc.exists() ? (userDoc.data().goalCalories || 2000) : 2000;
-    
-    weeklyData = dateStrings.map(dateStr => {
-        const meals = foodLogsCache[dateStr] || {Breakfast: [], Lunch: [], Dinner: [], Snacks: []};
-        const allLogs = [...meals.Breakfast, ...meals.Lunch, ...meals.Dinner, ...meals.Snacks];
-        const totalLogged = calculateTotalCalories(allLogs);
-        const remaining = goal - totalLogged;
-        
-        const date = new Date(dateStr);
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        return {
-            date: dateStr,
-            dayName: dayNames[date.getDay()],
-            dayNum: date.getDate(),
-            month: months[date.getMonth()],
-            goal: goal,
-            logged: totalLogged,
-            remaining: remaining,
-            status: totalLogged === 0 ? 'No Logs' : totalLogged > goal ? 'Over Goal' : 'On Track',
-            meals: meals
-        };
-    });
-    
-    renderWeeklyOverview(weeklyData);
-    */
 }
 
 function updateFilterButtons(active) {
@@ -728,7 +305,7 @@ function renderTodayView(dayData) {
 function renderWeeklyOverview(weekData) {
     const container = document.getElementById('logContent');
     
-    const dateRange = `December 8 - 14, 2025`;
+    const dateRange = `December ${weekData[0].dayNum} - ${weekData[weekData.length - 1].dayNum}, 2025`;
     
     container.innerHTML = `
         <div>
@@ -899,10 +476,6 @@ function showDayDetail(dateStr) {
     // FAKE DATA - Get day data
     const dayData = weeklyData.find(d => d.date === dateStr);
     
-    /* ====== FIREBASE VERSION (COMMENTED) ======
-    const dayData = weeklyData.find(d => d.date === dateStr);
-    */
-    
     if (!dayData || !dayData.meals) return;
     
     const allLogs = [...dayData.meals.Breakfast, ...dayData.meals.Lunch, ...dayData.meals.Dinner, ...dayData.meals.Snacks];
@@ -1018,8 +591,8 @@ function closeDayDetail() {
 // Format date as YYYY-MM-DD (matches Flutter)
 function _formatDate(date) {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padLeft(2, '0');
-    const day = String(date.getDate()).padLeft(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 
@@ -1041,13 +614,11 @@ window.openCalendar = function() {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     
-    // Set default dates
-    const today = new Date();
-    const weekAgo = new Date();
-    weekAgo.setDate(today.getDate() - 6);
-    
-    document.getElementById('dateTo').valueAsDate = today;
-    document.getElementById('dateFrom').valueAsDate = weekAgo;
+    // Set default dates to today (Dec 15, 2025)
+    const today = new Date('2025-12-15');
+    const todayStr = _formatDate(today);
+    document.getElementById('dateFrom').value = todayStr;
+    document.getElementById('dateTo').value = todayStr;
 };
 
 window.closeCalendar = function() {
@@ -1057,13 +628,16 @@ window.closeCalendar = function() {
 };
 
 window.updateDateRange = async function() {
-    const fromDate = new Date(document.getElementById('dateFrom').value);
-    const toDate = new Date(document.getElementById('dateTo').value);
+    const fromDateStr = document.getElementById('dateFrom').value;
+    const toDateStr = document.getElementById('dateTo').value;
     
-    if (!fromDate || !toDate || isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+    if (!fromDateStr || !toDateStr) {
         alert('Please select both dates');
         return;
     }
+    
+    const fromDate = new Date(fromDateStr);
+    const toDate = new Date(toDateStr);
     
     if (fromDate > toDate) {
         alert('Start date must be before end date');
@@ -1073,90 +647,59 @@ window.updateDateRange = async function() {
     currentView = 'custom';
     updateFilterButtons('custom');
     
-    // FAKE DATA - Filter by date range
-    const fakeLogs = getFakeMealLogs();
-    const filtered = [];
-    
-    let current = new Date(fromDate);
-    while (current <= toDate) {
-        const dateStr = _formatDate(current);
-        const meals = fakeLogs[dateStr] || {Breakfast: [], Lunch: [], Dinner: [], Snacks: []};
-        const allLogs = [...meals.Breakfast, ...meals.Lunch, ...meals.Dinner, ...meals.Snacks];
-        const totalLogged = calculateTotalCalories(allLogs);
-        const goal = 2000;
-        const remaining = goal - totalLogged;
-        
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        filtered.push({
-            date: dateStr,
-            dayName: dayNames[current.getDay()],
-            dayNum: current.getDate(),
-            month: months[current.getMonth()],
-            goal: goal,
-            logged: totalLogged,
-            remaining: remaining,
-            status: totalLogged === 0 ? 'No Logs' : totalLogged > goal ? 'Over Goal' : 'On Track',
-            meals: meals
-        });
-        
-        current.setDate(current.getDate() + 1);
-    }
-    
-    weeklyData = filtered;
-    renderWeeklyOverview(filtered);
-    closeCalendar();
-    
-    /* ====== FIREBASE VERSION (COMMENTED) ======
     try {
-        fromDate.setHours(0, 0, 0, 0);
-        toDate.setHours(23, 59, 59, 999);
+        // Call backend API to get logs in date range
+        const response = await fetch(`/api/profile/logs-in-range?start_date=${fromDateStr}&end_date=${toDateStr}`);
+        const result = await response.json();
         
-        await loadLogsInRange(fromDate, toDate);
-        
-        // Generate summary for each day in range
-        const dateStrings = [];
-        let current = new Date(fromDate);
-        while (current <= toDate) {
-            dateStrings.push(_formatDate(current));
-            current.setDate(current.getDate() + 1);
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to load logs');
         }
         
-        // Get user's goal
-        const userDocRef = doc(db, 'users', currentUserId);
-        const userDoc = await getDoc(userDocRef);
-        const goal = userDoc.exists() ? (userDoc.data().goalCalories || 2000) : 2000;
+        const logsData = result.data;
         
-        const filtered = dateStrings.map(dateStr => {
-            const meals = foodLogsCache[dateStr] || {Breakfast: [], Lunch: [], Dinner: [], Snacks: []};
+        // Generate summary for each day in range
+        const filtered = [];
+        let current = new Date(fromDate);
+        
+        while (current <= toDate) {
+            const dateStr = _formatDate(current);
+            const meals = logsData[dateStr] || {
+                'Breakfast': [],
+                'Lunch': [],
+                'Dinner': [],
+                'Snacks': []
+            };
+            
             const allLogs = [...meals.Breakfast, ...meals.Lunch, ...meals.Dinner, ...meals.Snacks];
             const totalLogged = calculateTotalCalories(allLogs);
+            const goal = 2000;
             const remaining = goal - totalLogged;
             
-            const date = new Date(dateStr);
             const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             
-            return {
+            filtered.push({
                 date: dateStr,
-                dayName: dayNames[date.getDay()],
-                dayNum: date.getDate(),
-                month: months[date.getMonth()],
+                dayName: dayNames[current.getDay()],
+                dayNum: current.getDate(),
+                month: months[current.getMonth()],
                 goal: goal,
                 logged: totalLogged,
                 remaining: remaining,
                 status: totalLogged === 0 ? 'No Logs' : totalLogged > goal ? 'Over Goal' : 'On Track',
                 meals: meals
-            };
-        });
+            });
+            
+            current.setDate(current.getDate() + 1);
+        }
         
         weeklyData = filtered;
         renderWeeklyOverview(filtered);
         closeCalendar();
+        
     } catch (error) {
-        console.error('Error updating date range:', error);
-        alert('Error loading logs for selected dates');
+        console.error('Error loading custom date range:', error);
+        alert('Error loading logs for selected dates. Please try again.');
     }
-    */
 };

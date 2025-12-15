@@ -203,12 +203,9 @@
                     </div>
                 </div>
                 <div class="flex-1">
-                    <h2 class="text-xl font-bold mb-1 text-gray-900" id="userName">Guest</h2>
-                    <p class="text-gray-600 text-sm" id="userEmail">Not logged in</p>
+                    <h2 class="text-xl font-bold mb-1 text-gray-900" id="userName">Hermione</h2>
+                    <p class="text-gray-600 text-sm" id="userEmail">Logged in</p>
                 </div>
-                <button class="text-gray-600 hover:text-gray-800 text-xl transition-all">
-                    <i class="fas fa-cog"></i>
-                </button>
             </div>
         </div>
 
@@ -218,7 +215,7 @@
                 <i class="fas fa-fire text-[#f7941d] text-2xl"></i>
                 <h3 class="text-lg font-bold text-gray-800">Weekly Streak</h3>
             </div>
-            <p class="text-sm text-gray-600 mb-4" id="streakText">5 days logged</p>
+            <p class="text-sm text-gray-600 mb-4" id="streakText">2 days logged</p>
             <div class="flex justify-between gap-2">
                 <div class="flex flex-col items-center gap-1">
                     <div class="w-10 h-10 rounded-full bg-[#f7941d] text-white flex items-center justify-center font-bold text-sm day-circle" data-day="1">1</div>
@@ -229,15 +226,15 @@
                     <span class="text-xs text-gray-600 font-medium">M</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
-                    <div class="w-10 h-10 rounded-full bg-[#f7941d] text-white flex items-center justify-center font-bold text-sm day-circle" data-day="3">3</div>
+                    <div class="w-10 h-10 rounded-full bg-white/50 text-gray-400 flex items-center justify-center font-bold text-sm day-circle" data-day="3">3</div>
                     <span class="text-xs text-gray-600 font-medium">T</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
-                    <div class="w-10 h-10 rounded-full bg-[#f7941d] text-white flex items-center justify-center font-bold text-sm day-circle" data-day="4">4</div>
+                    <div class="w-10 h-10 rounded-full bg-white/50 text-gray-400 flex items-center justify-center font-bold text-sm day-circle" data-day="4">4</div>
                     <span class="text-xs text-gray-600 font-medium">W</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
-                    <div class="w-10 h-10 rounded-full bg-[#f7941d] text-white flex items-center justify-center font-bold text-sm day-circle" data-day="5">5</div>
+                    <div class="w-10 h-10 rounded-full bg-white/50 text-gray-400 flex items-center justify-center font-bold text-sm day-circle" data-day="5">5</div>
                     <span class="text-xs text-gray-600 font-medium">T</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
@@ -258,7 +255,7 @@
                 <h3 class="text-lg font-bold text-gray-800">Highest Streak</h3>
             </div>
             <div class="flex items-baseline gap-2">
-                <p class="text-5xl font-bold text-[#4caf50]" id="highestStreak">21</p>
+                <p class="text-5xl font-bold text-[#4caf50]" id="highestStreak">2</p>
                 <p class="text-gray-700 font-medium text-lg">days</p>
             </div>
         </div>
@@ -270,7 +267,7 @@
                 <h3 class="text-lg font-bold text-gray-800">Avg Daily Intake</h3>
             </div>
             <div class="flex items-baseline gap-2">
-                <p class="text-5xl font-bold text-[#4caf50]" id="avgCalories">1850</p>
+                <p class="text-5xl font-bold text-[#4caf50]" id="avgCalories">1818.5</p>
                 <p class="text-gray-700 font-medium text-lg">cal</p>
             </div>
         </div>
