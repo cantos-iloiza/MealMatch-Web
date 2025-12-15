@@ -49,10 +49,10 @@ async function initializeProfile() {
 // ====== FAKE DATA FUNCTIONS (For Development) ======
 
 function loadFakeData() {
+    loadTodayView();
     loadFakeProfile();
     loadFakeStreak();
     loadFakeStats();
-    loadTodayView(); // Default view
 }
 
 function loadFakeProfile() {
@@ -503,7 +503,7 @@ async function loadLogsInRange(startDate, endDate) {
 
 function loadTodayView() {
     currentView = 'today';
-    updateFilterButtons('today');
+    updateFilterButtons('today'); // ← IMPORTANTE ITO!
     
     // FAKE DATA - Get today's data (Sunday, Dec 14)
     const todayData = getLogsGroupedByCategory('2025-12-14');

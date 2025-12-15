@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Profile & Log History - MealMatch')
+
 @section('page-title')
-    <h1 class="text-5xl font-bold">
-        <span class="text-green-600">Profile & </span><span class="text-orange-500">Log History</span>
-    </h1>
+    {{-- Empty - profile page has its own header with back button --}}
 @endsection
 
 @push('styles')
@@ -180,10 +180,11 @@
 @endpush
 
 @section('content')
-{{-- Profile Page Header with Back Button --}}
-<div class="flex items-center gap-4 mb-6">
-    <a href="{{ route('home') }}" class="back-button bg-white/70 backdrop-blur-sm rounded-2xl p-3 shadow-lg hover:shadow-xl">
-        <i class="fas fa-arrow-left text-gray-700 text-xl"></i>
+{{-- Page Header with Back Button - SAME DESIGN AS "What Can I Cook" --}}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Profile & Log History</h1>
+    <a href="{{ route('home') }}" class="text-blue-600 hover:text-blue-800 font-semibold">
+        ← Back to Home
     </a>
 </div>
 
