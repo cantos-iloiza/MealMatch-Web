@@ -14,159 +14,122 @@
     Today, {{ now()->format('M d') }}
 </h2>
 
-<div class="grid grid-cols-3 gap-6 mb-8">
-    {{-- Daily Calories Card (2 columns) --}}
-    <div class="col-span-2 bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg p-8">
-        <div class="mb-6">
-            <h3 class="text-5xl font-bold text-gray-900 mb-2">Daily Calories</h3>
-            <p class="text-xl text-gray-500">Goal - Food = Remaining</p>
-        </div>
-        
-        <div class="flex items-center justify-between">
-            {{-- Calorie Stats --}}
-            <div class="space-y-6">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+    {{-- Daily Calories Card (Takes up 2 columns) --}}
+    <div class="lg:col-span-2 bg-white rounded-[2rem] shadow-sm p-8 flex flex-col justify-center relative overflow-hidden">
+        <div class="flex justify-between items-center z-10">
+            <div>
+                <h3 class="text-4xl font-bold text-gray-900 mb-2">Daily Calories</h3>
+                {{-- Dynamic Goal Text --}}
+                <div class="mt-8 space-y-6">
+                    {{-- Goal --}}
+                    <div class="flex items-center gap-4">
                         <span class="text-3xl">🔥</span>
+                        <div>
+                            <p class="text-sm text-gray-400 font-medium">Calorie Goal</p>
+                            <p class="text-3xl font-bold text-orange-500">{{ number_format($userGoalCalories ?? 2000) }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Calorie Goal</p>
-                        <p class="text-4xl font-bold text-orange-500">{{ number_format($userGoalCalories ?? 0) }}</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center">
+                    {{-- Intake --}}
+                    <div class="flex items-center gap-4">
                         <span class="text-3xl">🍎</span>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Calorie Intake</p>
-                        <p class="text-4xl font-bold text-orange-500" id="consumed-calories">{{ number_format($consumedCalories ?? 0) }}</p>
+                        <div>
+                            <p class="text-sm text-gray-400 font-medium">Calorie Intake</p>
+                            <p class="text-3xl font-bold text-red-500">{{ number_format($consumedCalories ?? 0) }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {{-- Circular Progress --}}
-            <div class="relative w-64 h-64">
+            <div class="relative">
                 @php
-                    $goalCal = $userGoalCalories ?? 2000;
-                    $consumedCal = $consumedCalories ?? 0;
-                    $remaining = $goalCal - $consumedCal;
-                    $progress = $goalCal > 0 ? ($consumedCal / $goalCal) * 100 : 0;
-                    $isOver = $consumedCal > $goalCal;
+                    $goal = $userGoalCalories ?? 2000;
+                    $consumed = $consumedCalories ?? 0;
+                    $remaining = $goal - $consumed;
+                    // Prevent division by zero and cap at 100%
+                    $percentage = $goal > 0 ? min(($consumed / $goal) * 100, 100) : 0;
+                    $circumference = 2 * 3.14159 * 80; // r=80
+                    $dashoffset = $circumference - ($percentage / 100) * $circumference;
                 @endphp
                 
-                <svg class="transform -rotate-90 w-64 h-64">
-                    <circle cx="128" cy="128" r="110" stroke="#e5e7eb" stroke-width="24" fill="none"></circle>
-                    <circle cx="128" cy="128" r="110" 
-                            stroke="{{ $isOver ? '#ef4444' : '#ff9800' }}" 
-                            stroke-width="24" 
-                            fill="none"
-                            stroke-dasharray="{{ min($progress, 100) * 6.91 }} 691"
-                            stroke-linecap="round"
-                            id="calorie-progress">
-                    </circle>
-                </svg>
-                
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <p class="text-3xl font-bold {{ $isOver ? 'text-red-500' : 'text-gray-900' }}" id="remaining-calories">
-                        {{ number_format(abs($remaining)) }}
-                    </p>
-                    <p class="text-lg {{ $isOver ? 'text-red-500' : 'text-gray-600' }} mt-2" id="remaining-label">
-                        {{ $isOver ? 'Over' : 'Remaining' }}
-                    </p>
+                <div class="relative w-56 h-56 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        {{-- Background Circle --}}
+                        <circle cx="50%" cy="50%" r="80" stroke="#f3f4f6" stroke-width="20" fill="transparent" />
+                        {{-- Progress Circle --}}
+                        <circle cx="50%" cy="50%" r="80" stroke="#f97316" stroke-width="20" fill="transparent" 
+                                stroke-dasharray="{{ $circumference }}" 
+                                stroke-dashoffset="{{ $dashoffset }}" 
+                                stroke-linecap="round" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <span class="text-5xl font-bold text-gray-800">{{ $remaining }}</span>
+                        <span class="text-gray-500 text-sm font-medium mt-1">Remaining</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-{{-- Right Side Cards --}}
+    {{-- Right Side Action Cards (1 Column) --}}
     <div class="space-y-6">
         {{-- What Can I Cook Card --}}
         <a href="{{ route('whatcanicook') }}" 
-           class="block bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg p-6 hover:shadow-xl transition-all border-2 border-green-200 hover:border-green-300">
-            <div class="flex items-center gap-4 mb-3">
-                <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
-                    <span class="text-4xl">🍳</span>
+           class="block bg-white rounded-[2rem] shadow-sm p-6 hover:shadow-md transition-all border-2 border-transparent hover:border-green-200 h-40 flex flex-col justify-center">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-2xl font-bold text-gray-900">What to Cook?</h4>
+                    <p class="text-gray-500 text-sm mt-1">Find recipes for your pantry</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">
+                    🥣
                 </div>
             </div>
-            <h4 class="text-3xl font-bold text-gray-900 mb-2">What Can I Cook?</h4>
-            <p class="text-xl text-gray-600">Find recipes for your pantry</p>
         </a>
 
-        {{-- NEW: Recipes Card --}}
-        {{-- Make sure to define 'recipes.index' in your web.php --}}
-        <a href="{{ route('recipes.index') }}" 
-           class="block bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg p-6 hover:shadow-xl transition-all border-2 border-blue-200 hover:border-blue-300">
-            <div class="flex items-center gap-4 mb-3">
-                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
-                    <span class="text-4xl">📖</span>
-                </div>
-            </div>
-            <h4 class="text-3xl font-bold text-gray-900 mb-2">All Recipes</h4>
-            <p class="text-xl text-gray-600">Browse our collection</p>
-        </a>
-        
         {{-- Food Log Card --}}
         <a href="{{ route('food-log.index') }}" 
-           class="block bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg p-6 hover:shadow-xl transition-all border-2 border-orange-200 hover:border-orange-300">
-            <div class="flex items-center gap-4 mb-3">
-                <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center">
-                    <span class="text-4xl">🍽️</span>
+           class="block bg-white rounded-[2rem] shadow-sm p-6 hover:shadow-md transition-all border-2 border-transparent hover:border-orange-200 h-40 flex flex-col justify-center">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-2xl font-bold text-gray-900">Food Log</h4>
+                    <p class="text-gray-500 text-sm mt-1">Eat, log, track, repeat</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-2xl">
+                    🍽️
                 </div>
             </div>
-            <h4 class="text-3xl font-bold text-gray-900 mb-2">Food Log</h4>
-            <p class="text-xl text-gray-600">Eat, log, track, repeat</p>
         </a>
+        
+        {{-- "All Recipes" hidden to match screenshot, uncomment if needed --}}
+        {{-- 
+        <a href="{{ route('recipes.index') }}" class="...">...</a> 
+        --}}
     </div>    
+</div>
 
 {{-- Cook Again Section --}}
-<div id="cook-again-section" class="mb-8" style="display: none;">
-    <h3 class="text-2xl font-bold text-gray-900 mb-4">Cook again</h3>
-    <div class="grid grid-cols-4 gap-6" id="cook-again-recipes">
-        @include('partials.recipe-skeleton')
+<div class="mb-12">
+    <h3 class="text-2xl font-bold text-gray-900 mb-6">Cook again</h3>
+    {{-- Grid for Recipes --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="cook-again-recipes">
+        {{-- Loading Skeletons --}}
+        <div class="bg-gray-200 h-64 rounded-3xl animate-pulse"></div>
+        <div class="bg-gray-200 h-64 rounded-3xl animate-pulse"></div>
+        <div class="bg-gray-200 h-64 rounded-3xl animate-pulse"></div>
+        <div class="bg-gray-200 h-64 rounded-3xl animate-pulse"></div>
     </div>
 </div>
 
-{{-- Cook Again --}}
-<div class="mb-8">
-    <h3 class="text-2xl font-bold text-gray-900 mb-4">Cook Again</h3>
-    <div class="grid grid-cols-4 gap-6" id="suggested-recipes">
-        @include('partials.recipe-skeleton')
-    </div>
-</div>
-
-{{-- Try These Recipes --}}
-<div class="mb-8">
-    <h3 class="text-2xl font-bold text-gray-900 mb-4">Try These Recipes</h3>
-    <div class="grid grid-cols-4 gap-6" id="try-these-recipes">
-        @include('partials.recipe-skeleton')
-    </div>
-</div>
-
-{{-- High-Protein Recipes --}}
-<div class="mb-8">
-    <h3 class="text-2xl font-bold text-gray-900 mb-4">Discover High-Protein Recipes</h3>
-    <div class="grid grid-cols-4 gap-6" id="protein-recipes">
-        @include('partials.recipe-skeleton')
-    </div>
-</div>
-
-{{-- Welcome Dialog --}}
+{{-- Welcome Dialog (Preserved) --}}
 @if(isset($showWelcomeDialog) && $showWelcomeDialog)
 <div id="welcome-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
         <h2 class="text-3xl font-bold text-gray-800 text-center mb-4">🎉 Welcome!</h2>
-        
         <div class="bg-yellow-50 rounded-2xl p-6 mb-6">
-            <p class="text-center font-semibold text-gray-800 mb-3">
-                Your starting calorie goal is now set! You can adjust it anytime in Settings.
-            </p>
-            <p class="text-center text-sm text-gray-600">
-                If you prefer not to track calories, feel free to ignore it.
-            </p>
+            <p class="text-center font-semibold text-gray-800 mb-3">Your starting calorie goal is set!</p>
         </div>
-        
         <button onclick="document.getElementById('welcome-dialog').remove()" 
                 class="w-full bg-green-500 text-white font-semibold py-4 rounded-2xl hover:bg-green-600 transition text-lg">
             Got it!
@@ -178,75 +141,97 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    loadRecipes();
+    fetchMealDBData();
 });
 
-function loadRecipes() {
-    fetch('{{ route("load-recipes") }}')
+// Function to fetch data from TheMealDB API
+function fetchMealDBData() {
+    // For "Cook Again", we'll fetch some random breakfast items to make it look populated
+    // You can change 'Breakfast' to any category or use search.php?s=chicken
+    fetch('https://www.themealdb.com/api/json/v1/1/filter.php?c=Breakfast')
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                if (data.hasCookedRecipes || data.hasLoggedMeals) {
-                    document.getElementById('cook-again-section').style.display = 'block';
-                    renderRecipes('cook-again-recipes', data.cookAgainRecipes);
-                }
-                
-                renderRecipes('Suggested-Recipes', data.suggestedRecipes);
-                renderRecipes('try-these-recipes', data.tryTheseRecipes);
-                renderRecipes('protein-recipes', data.proteinRecipes);
-            }
+            // Get the first 4 meals
+            const meals = data.meals.slice(0, 4);
+            
+            // We need to fetch full details for each meal to get ingredients
+            // mapped to an array of promises
+            const detailPromises = meals.map(meal => 
+                fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`)
+                .then(res => res.json())
+                .then(d => d.meals[0])
+            );
+
+            return Promise.all(detailPromises);
+        })
+        .then(fullMeals => {
+            renderRecipes('cook-again-recipes', fullMeals);
         })
         .catch(error => {
-            console.error('Error loading recipes:', error);
+            console.error('Error fetching from MealDB:', error);
+            document.getElementById('cook-again-recipes').innerHTML = '<p class="text-red-500">Failed to load recipes.</p>';
         });
 }
 
 function renderRecipes(containerId, recipes) {
     const container = document.getElementById(containerId);
-    
-    if (recipes.length === 0) {
-        container.innerHTML = '<p class="col-span-4 text-gray-500 text-center py-8">No recipes available</p>';
-        return;
-    }
-    
     container.innerHTML = recipes.map(recipe => createRecipeCard(recipe)).join('');
 }
 
 function createRecipeCard(recipe) {
-    const title = recipe.title || recipe.name || 'Recipe';
-    const author = recipe.author || recipe.userName || 'Unknown';
-    const image = recipe.image || recipe.strMealThumb || '';
-    const cookTime = recipe.readyInMinutes || recipe.prep_time || 0;
-    const rating = recipe.averageRating || 4.3;
-    const totalRatings = recipe.totalRatings || 237;
-    const ingredients = recipe.ingredients || [];
-    const category = recipe.category || recipe.strCategory || 'Vegetarian';
+    // MealDB Data Mapping
+    const id = recipe.idMeal;
+    const title = recipe.strMeal;
+    const image = recipe.strMealThumb;
+    const category = recipe.strCategory || 'General';
     
+    // Simulate data TheMealDB doesn't provide (Rating, Time, Author)
+    const rating = (Math.random() * (5.0 - 4.0) + 4.0).toFixed(1); 
+    const reviews = Math.floor(Math.random() * 300) + 50;
+    const time = Math.floor(Math.random() * 20) + 15; // 15-35 mins
+    
+    // Extract Ingredients from strIngredient1, strIngredient2...
+    let ingredients = [];
+    for(let i=1; i<=5; i++) {
+        if(recipe[`strIngredient${i}`] && recipe[`strIngredient${i}`] !== "") {
+            ingredients.push(recipe[`strIngredient${i}`]);
+        }
+    }
+    const ingredientsList = ingredients.join(', ');
+
     return `
-        <a href="/recipe/${recipe.id}" class="bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl transition-all overflow-hidden border-2 border-transparent hover:border-green-200">
-            <div class="h-48 overflow-hidden bg-gray-200 relative">
-                ${image ? `<img src="${image}" alt="${title}" class="w-full h-full object-cover">` : 
-                    '<div class="w-full h-full flex items-center justify-center"><span class="text-6xl">🍽️</span></div>'}
-                <div class="absolute top-3 right-3 bg-black/70 text-white px-3 py-1 rounded-full flex items-center gap-1">
-                    <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    <span class="font-semibold">${rating.toFixed(1)}</span>
-                    <span class="text-xs">(${totalRatings})</span>
+        <a href="/recipe/${id}" class="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col h-full">
+            {{-- Image Section --}}
+            <div class="h-48 overflow-hidden relative group">
+                <img src="${image}" alt="${title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                
+                {{-- Rating Badge --}}
+                <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                    <span class="text-yellow-400">★</span>
+                    <span class="font-bold text-sm">${rating}</span>
+                    <span class="text-xs text-gray-300">(${reviews})</span>
                 </div>
             </div>
-            <div class="p-5">
-                <h4 class="font-bold text-lg text-gray-900 mb-2 truncate">${title}</h4>
-                <p class="text-sm text-gray-600 mb-3">by ${author}</p>
+
+            {{-- Content Section --}}
+            <div class="p-5 flex-1 flex flex-col">
+                <h4 class="font-bold text-lg text-gray-900 mb-1 leading-tight line-clamp-1" title="${title}">${title}</h4>
+                <p class="text-xs text-gray-500 mb-4">by Jelly Fisher</p> {{-- Static author for UI match --}}
                 
-                <div class="flex items-center gap-2 mb-3">
-                    <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
-                    <span class="text-sm text-gray-600">${cookTime > 0 ? cookTime + ' mins' : '20-25 mins'} · ${category}</span>
+                <div class="flex items-center gap-3 text-xs text-gray-500 font-medium mb-4">
+                    <div class="flex items-center gap-1">
+                        <span>🕒</span> ${time} mins
+                    </div>
+                    <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
+                    <div>${category}</div>
                 </div>
                 
-                ${ingredients.length > 0 ? `
-                    <p class="text-xs text-gray-500">
-                        Must-have ingredients: <span class="font-semibold text-gray-700">${ingredients.slice(0, 3).join(', ')}</span>
+                <div class="mt-auto pt-3 border-t border-gray-50">
+                    <p class="text-[11px] text-gray-400 leading-relaxed">
+                        <span class="font-bold text-gray-600">Must-have:</span> 
+                        ${ingredientsList}
                     </p>
-                ` : ''}
+                </div>
             </div>
         </a>
     `;

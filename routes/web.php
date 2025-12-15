@@ -42,23 +42,22 @@ Route::get('/modify-food', [ModifyFoodController::class, 'show'])->name('modify-
 Route::post('/modify-food/set-item', [ModifyFoodController::class, 'setFoodItem'])->name('modify-food.set-item');
 Route::post('/modify-food/add', [ModifyFoodController::class, 'addFood'])->name('modify-food.add');
 
-<<<<<<< HEAD
 // Profile routes
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
 // Recipe routes
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
 
-// 2. The Detail Page (Show) <--- ADD THIS LINE
 Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
 
+// 3. The Favorites Toggle (AJAX)
 Route::post('/recipe/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipe.toggle');
 
 // Recipe API endpoints (for favorites functionality)
 Route::post('/api/recipe/favorite', [RecipeController::class, 'saveFavorite'])->name('recipe.favorite.save');
 Route::get('/api/recipe/favorites', [RecipeController::class, 'getFavorites'])->name('recipe.favorites');
 Route::delete('/api/recipe/favorite', [RecipeController::class, 'removeFavorite'])->name('recipe.favorite.remove');
-=======
+
 // ====== PROFILE PAGE ROUTE ======
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
 
@@ -75,4 +74,4 @@ Route::get('/api/profile/highest-streak', [ProfileController::class, 'getHighest
 Route::get('/api/profile/average-calories', [ProfileController::class, 'getAverageCalories'])->name('profile.average.calories');
 Route::get('/api/profile/logs-by-date', [ProfileController::class, 'getLogsGroupedByCategory'])->name('profile.logs.by.date');
 Route::get('/api/profile/logs-range', [ProfileController::class, 'getLogsInRange'])->name('profile.logs.range');
->>>>>>> 38510453d5c5a128896af4cdb5abe93c6cbd3781
+
