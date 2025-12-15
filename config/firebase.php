@@ -1,10 +1,8 @@
 <?php
-// ============================================
 // config/firebase.php
-// ============================================
 return [
     'credentials' => [
-        'file' => env('FIREBASE_CREDENTIALS', storage_path('D:\LaravelProjects\firebase-credentials.json')),
+        'file' => env('FIREBASE_CREDENTIALS', storage_path('storage\app\firebase-credentials.json')),
     ],
     
     'database' => [
@@ -19,4 +17,5 @@ return [
         'messagingSenderId' => env('FIREBASE_MESSAGING_SENDER_ID'),
         'appId' => env('FIREBASE_APP_ID'),
     ],
+
 ];
