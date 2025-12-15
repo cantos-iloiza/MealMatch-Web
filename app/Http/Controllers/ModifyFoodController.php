@@ -15,7 +15,7 @@ class ModifyFoodController extends Controller
     public function __construct()
     {
         $this->firebase = (new Factory)
-            ->withServiceAccount(config('firebase.credentials.file'))
+            ->withServiceAccount(config('fIREBASE_CREDENTIALS'))
             ->createAuth();
     }
 

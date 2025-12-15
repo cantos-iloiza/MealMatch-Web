@@ -12,16 +12,13 @@ use App\Http\Controllers\RecipeController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/load-recipes', [HomeController::class, 'loadRecipes'])->name('load-recipes');
 Route::get('/refresh-calories', [HomeController::class, 'refreshCalories'])->name('refresh-calories');
-Route::get('/recipe/{id}', function($id) {
-    return view('recipe-detail', compact('id'));
-})->name('recipe.show');
 
 // Notifications route
 Route::get('/notifications', function () {
     return view('notifications');
 })->name('notifications');
 
-// What Can I Cook route (ADD THIS)
+// What Can I Cook route
 Route::get('/what-can-i-cook', function () {
     return view('whatcanicook');
 })->name('whatcanicook');
@@ -44,7 +41,12 @@ Route::post('/modify-food/add', [ModifyFoodController::class, 'addFood'])->name(
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
 // Recipe routes
+Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
+
+// 2. The Detail Page (Show) <--- ADD THIS LINE
 Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+
+Route::post('/recipe/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipe.toggle');
 
 // Recipe API endpoints (for favorites functionality)
 Route::post('/api/recipe/favorite', [RecipeController::class, 'saveFavorite'])->name('recipe.favorite.save');

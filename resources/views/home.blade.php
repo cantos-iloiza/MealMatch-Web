@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    {{-- Right Side Cards --}}
+{{-- Right Side Cards --}}
     <div class="space-y-6">
         {{-- What Can I Cook Card --}}
         <a href="{{ route('whatcanicook') }}" 
@@ -86,6 +86,19 @@
             </div>
             <h4 class="text-3xl font-bold text-gray-900 mb-2">What Can I Cook?</h4>
             <p class="text-xl text-gray-600">Find recipes for your pantry</p>
+        </a>
+
+        {{-- NEW: Recipes Card --}}
+        {{-- Make sure to define 'recipes.index' in your web.php --}}
+        <a href="{{ route('recipes.index') }}" 
+           class="block bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg p-6 hover:shadow-xl transition-all border-2 border-blue-200 hover:border-blue-300">
+            <div class="flex items-center gap-4 mb-3">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
+                    <span class="text-4xl">📖</span>
+                </div>
+            </div>
+            <h4 class="text-3xl font-bold text-gray-900 mb-2">All Recipes</h4>
+            <p class="text-xl text-gray-600">Browse our collection</p>
         </a>
         
         {{-- Food Log Card --}}
@@ -99,8 +112,7 @@
             <h4 class="text-3xl font-bold text-gray-900 mb-2">Food Log</h4>
             <p class="text-xl text-gray-600">Eat, log, track, repeat</p>
         </a>
-    </div>
-</div>
+    </div>    
 
 {{-- Cook Again Section --}}
 <div id="cook-again-section" class="mb-8" style="display: none;">

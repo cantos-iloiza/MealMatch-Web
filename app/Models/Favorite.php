@@ -12,7 +12,11 @@ class Favorite extends Model
 
     protected $fillable = [
         'firebase_uid',
+        'user_id',
         'recipe_id',
+        'title',
+        'image',
+        'category'
     ];
 
     public function user()

@@ -4,153 +4,94 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-// Uncomment when Firebase Admin SDK is needed
-// use Kreait\Firebase\Factory;
-// use Kreait\Firebase\ServiceAccount;
+use App\Models\Favorite; // Import the Model
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
 {
-    /**
-     * Display the recipe detail page
-     * Fetches recipe data from MealDB API
-     * 
-     * @param string $id - MealDB recipe ID
-     * @return \Illuminate\View\View
-     */
-    public function show($id)
+    public function index(Request $request)
     {
-        try {
-            // Fetch recipe from MealDB API
-            $response = Http::get("https://www.themealdb.com/api/json/v1/1/lookup.php?i={$id}");
-            
-            if (!$response->successful() || !isset($response->json()['meals'][0])) {
-                abort(404, 'Recipe not found');
-            }
-            
-            $recipe = $response->json()['meals'][0];
-            
-            // Extract ingredients and measurements
-            $ingredients = [];
-            for ($i = 1; $i <= 20; $i++) {
-                $ingredient = $recipe["strIngredient{$i}"] ?? '';
-                $measure = $recipe["strMeasure{$i}"] ?? '';
-                
-                if (!empty($ingredient) && trim($ingredient) != "") {
-                    $ingredients[] = [
-                        'ingredient' => $ingredient,
-                        'measure' => trim($measure)
-                    ];
+        $tab = $request->query('tab', 'discovery');
+        $category = $request->query('category');
+        $search = $request->query('search');
+        $recipes = [];
+        
+        // Get current user ID (or use 0 for guest testing)
+        $userId = Auth::id() ?? 0;
+
+        // 1. DISCOVERY TAB
+        if ($tab === 'discovery') {
+            try {
+                $baseUrl = "https://www.themealdb.com/api/json/v1/1/";
+                if ($category) {
+                    $response = Http::withoutVerifying()->get($baseUrl . "filter.php?c={$category}");
+                } elseif ($search) {
+                    $response = Http::withoutVerifying()->get($baseUrl . "search.php?s={$search}");
+                } else {
+                    $response = Http::withoutVerifying()->get($baseUrl . "filter.php?c=Chicken");
                 }
+                
+                if ($response->successful()) {
+                    $recipes = $response->json()['meals'] ?? [];
+                }
+            } catch (\Exception $e) {
+                $recipes = [];
             }
+        } 
+        
+        // 2. FAVORITES TAB (REAL DATABASE DATA)
+        elseif ($tab === 'favorites') {
+            // Fetch from DB and map to match API format
+            $favs = Favorite::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
             
-            // Split instructions into steps
-            $instructions = array_filter(
-                explode("\r\n", $recipe['strInstructions'] ?? ''),
-                fn($step) => !empty(trim($step))
-            );
-            
-            // Extract YouTube video ID if available
-            $videoId = null;
-            if (!empty($recipe['strYoutube'])) {
-                preg_match('/[?&]v=([^&]+)/', $recipe['strYoutube'], $matches);
-                $videoId = $matches[1] ?? null;
-            }
-            
-            // Split recipe name for styling (last word in orange)
-            $words = explode(' ', $recipe['strMeal']);
-            $lastWord = array_pop($words);
-            $recipeName = implode(' ', $words);
-            
-            // Parse tags
-            $tags = !empty($recipe['strTags']) ? explode(',', $recipe['strTags']) : [];
-            
-            return view('recipe', compact('recipe', 'ingredients', 'instructions', 'videoId', 'recipeName', 'lastWord', 'tags'));
-            
-        } catch (\Exception $e) {
-            abort(500, 'Error fetching recipe: ' . $e->getMessage());
+            $recipes = $favs->map(function($fav) {
+                return [
+                    'idMeal' => $fav->recipe_id,
+                    'strMeal' => $fav->title,
+                    'strMealThumb' => $fav->image,
+                    'strCategory' => $fav->category
+                ];
+            })->toArray();
+        }
+
+        // Get list of favorited IDs to check which hearts should be filled
+        $favoriteIds = Favorite::where('user_id', $userId)->pluck('recipe_id')->toArray();
+
+        return view('recipe', [
+            'recipes' => $recipes,
+            'currentCategory' => $category,
+            'currentTab' => $tab,
+            'favoriteIds' => $favoriteIds // Pass this to view
+        ]);
+    }
+
+    // NEW: Toggle Favorite (AJAX)
+    public function toggleFavorite(Request $request)
+    {
+        $userId = Auth::id() ?? 0;
+        $recipeId = $request->input('recipe_id');
+
+        // Check if already favorited
+        $exists = Favorite::where('user_id', $userId)->where('recipe_id', $recipeId)->first();
+
+        if ($exists) {
+            // Remove it
+            $exists->delete();
+            return response()->json(['status' => 'removed']);
+        } else {
+            // Add it
+            Favorite::create([
+                'user_id' => $userId,
+                'recipe_id' => $recipeId,
+                'title' => $request->input('title'),
+                'image' => $request->input('image'),
+                'category' => $request->input('category'),
+            ]);
+            return response()->json(['status' => 'added']);
         }
     }
 
-    public function saveFavorite(Request $request)
-    {
-        try {
-            $request->validate([
-                'recipe_id' => 'required|string',
-                'recipe_name' => 'required|string',
-                'recipe_image' => 'required|string',
-                'recipe_category' => 'nullable|string',
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Recipe saved to favorites'
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function getFavorites(Request $request)
-    {
-        try {
-   
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    [
-                        'id' => '1',
-                        'recipeId' => '52772',
-                        'recipeName' => 'Teriyaki Chicken Casserole',
-                        'recipeImage' => 'https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg',
-                        'recipeCategory' => 'Chicken',
-                        'createdAt' => '2025-12-14 10:30:00'
-                    ],
-                    [
-                        'id' => '2',
-                        'recipeId' => '52940',
-                        'recipeName' => 'Brown Stew Chicken',
-                        'recipeImage' => 'https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg',
-                        'recipeCategory' => 'Chicken',
-                        'createdAt' => '2025-12-13 15:20:00'
-                    ]
-                ]
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
-    
-    /**
-     * Remove recipe from favorites
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function removeFavorite(Request $request)
-    {
-        try {
-            $request->validate([
-                'favorite_id' => 'required|string',
-            ]);
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Recipe removed from favorites'
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
+    // ... Keep random() and show() methods EXACTLY as they were ...
+    public function random() { /* ... your existing random code ... */ }
+    public function show($id) { /* ... your existing show code ... */ }
 }

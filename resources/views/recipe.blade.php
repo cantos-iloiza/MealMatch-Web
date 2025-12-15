@@ -1,443 +1,185 @@
-<?php
-// Get recipe ID from URL
-$recipeId = isset($_GET['id']) ? $_GET['id'] : null;
+@extends('layouts.app')
 
-if (!$recipeId) {
-    header('Location: index.php');
-    exit;
-}
+@section('title', 'Recipes - MealMatch')
 
-// Fetch recipe from MealDB API
-$apiUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" . $recipeId;
-$response = file_get_contents($apiUrl);
-$data = json_decode($response, true);
+@section('content')
 
-if (!$data || !isset($data['meals'][0])) {
-    header('Location: index.php');
-    exit;
-}
+{{-- 1. Hero Section --}}
+<div class="relative w-full h-72 rounded-3xl overflow-hidden shadow-lg mb-8 group">
+    <img src="{{ asset('images/recipe-header.jpg') }}" 
+         onerror="this.src='https://images.unsplash.com/photo-1556910103-1c02745a30bf?q=80&w=2000&auto=format&fit=crop'"
+         alt="Cooking Header" 
+         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-white z-10 text-center px-4">
+        <h1 class="text-5xl font-bold mb-3 tracking-wide drop-shadow-lg">Kitchen Creations</h1>
+        <p class="text-xl font-light opacity-90 max-w-2xl">
+            Explore thousands of recipes or find the perfect meal for your ingredients.
+        </p>
+    </div>
+</div>
 
-$recipe = $data['meals'][0];
+{{-- 2. TABS: Discovery vs Favorites --}}
+<div class="flex items-center justify-center mb-10">
+    <div class="bg-gray-100 p-1.5 rounded-2xl flex items-center gap-1 shadow-inner">
+        {{-- Discovery Tab --}}
+        <a href="{{ route('recipes.index', ['tab' => 'discovery']) }}" 
+           class="px-8 py-3 rounded-xl text-sm font-bold transition-all {{ $currentTab == 'discovery' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900' }}">
+            🌍 Discovery
+        </a>
+        
+        {{-- Favorites Tab --}}
+        <a href="{{ route('recipes.index', ['tab' => 'favorites']) }}" 
+           class="px-8 py-3 rounded-xl text-sm font-bold transition-all {{ $currentTab == 'favorites' ? 'bg-white text-orange-500 shadow-sm' : 'text-gray-500 hover:text-gray-900' }}">
+            ❤️ Favorites
+        </a>
+    </div>
+</div>
 
-// Extract ingredients and measurements
-$ingredients = [];
-for ($i = 1; $i <= 20; $i++) {
-    $ingredient = $recipe["strIngredient$i"];
-    $measure = $recipe["strMeasure$i"];
-    
-    if (!empty($ingredient) && trim($ingredient) != "") {
-        $ingredients[] = [
-            'ingredient' => $ingredient,
-            'measure' => trim($measure)
-        ];
+{{-- 3. Search & Filter Bar (Only show on Discovery Tab) --}}
+@if($currentTab == 'discovery')
+<div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
+    {{-- Search Input --}}
+    <form action="{{ route('recipes.index') }}" method="GET" class="relative w-full md:w-80 group">
+        <input type="hidden" name="tab" value="discovery"> {{-- Keep tab active --}}
+        <input type="text" 
+               name="search" 
+               value="{{ request('search') }}"
+               placeholder="Search recipes..." 
+               class="w-full pl-12 pr-4 py-3 rounded-2xl border-2 border-transparent bg-white shadow-sm focus:outline-none focus:border-orange-400 focus:ring-0 transition-all text-gray-700 placeholder-gray-400">
+        <svg class="w-6 h-6 text-gray-400 absolute left-4 top-3.5 group-focus-within:text-orange-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+    </form>
+
+    {{-- Categories --}}
+    <div class="flex-1 w-full overflow-x-auto pb-2 scrollbar-hide">
+        <div class="flex items-center justify-start md:justify-end gap-3 px-2">
+            
+            {{-- 'All' Button --}}
+            <a href="{{ route('recipes.index', ['tab' => 'discovery']) }}" 
+               class="px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm whitespace-nowrap transition-all transform hover:-translate-y-0.5
+                      {{ !request('category') && !request('search') ? 'bg-orange-500 text-white shadow-orange-200' : 'bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-600' }}">
+                All
+            </a>
+            
+            {{-- Category Pills --}}
+            @foreach(['Breakfast', 'Chicken', 'Beef', 'Seafood', 'Vegetarian', 'Pasta'] as $cat)
+                <a href="{{ route('recipes.index', ['tab' => 'discovery', 'category' => $cat]) }}" 
+                   class="px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm whitespace-nowrap transition-all transform hover:-translate-y-0.5
+                          {{ request('category') == $cat ? 'bg-orange-500 text-white shadow-orange-200' : 'bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-600' }}">
+                    {{ $cat }}
+                </a>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- 4. Recipe Grid --}}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+    @forelse($recipes as $recipe)
+    <a href="{{ route('recipe.show', ['id' => $recipe['idMeal']]) }}" 
+       class="group relative h-[22rem] bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        
+        <div class="h-full w-full relative overflow-hidden">
+            <img src="{{ $recipe['strMealThumb'] }}" 
+                 alt="{{ $recipe['strMeal'] }}" 
+                 loading="lazy"
+                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 w-full p-6">
+            <span class="inline-block px-3 py-1 mb-3 text-xs font-bold tracking-wider text-white uppercase bg-orange-500 rounded-lg shadow-sm">
+                {{ $recipe['strCategory'] ?? request('category', 'Recipe') }}
+            </span>
+            <h3 class="text-2xl font-bold text-white leading-tight drop-shadow-md line-clamp-2 mb-1 group-hover:text-orange-100 transition-colors">
+                {{ $recipe['strMeal'] }}
+            </h3>
+        </div>
+
+        {{-- Heart Button (Corrected Logic) --}}
+        <button onclick="toggleFavorite(this, event)"
+                data-id="{{ $recipe['idMeal'] }}"
+                data-title="{{ $recipe['strMeal'] }}"
+                data-image="{{ $recipe['strMealThumb'] }}"
+                data-category="{{ $recipe['strCategory'] ?? '' }}"
+                class="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all z-10 shadow-sm
+                       {{ in_array($recipe['idMeal'], $favoriteIds ?? []) ? 'bg-white text-red-500' : 'bg-white/30 backdrop-blur-md text-white hover:bg-white hover:text-red-500' }}">
+            
+            <svg class="w-5 h-5 transition-transform active:scale-75" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+        </button>
+    </a>
+    @empty
+    {{-- Empty State --}}
+    <div class="col-span-full flex flex-col items-center justify-center py-16 text-center">
+        <div class="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+            <span class="text-4xl">{{ $currentTab == 'favorites' ? '💔' : '🥘' }}</span>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">
+            {{ $currentTab == 'favorites' ? 'No favorites yet' : 'No recipes found' }}
+        </h3>
+        <p class="text-gray-500 max-w-md mx-auto mb-6">
+            {{ $currentTab == 'favorites' ? 'Go to Discovery and save some recipes to see them here!' : 'Try a different keyword or category.' }}
+        </p>
+        <a href="{{ route('recipes.index', ['tab' => 'discovery']) }}" class="px-8 py-3 bg-orange-500 text-white font-semibold rounded-xl hover:bg-orange-600 transition shadow-lg shadow-orange-200">
+            {{ $currentTab == 'favorites' ? 'Discover Recipes' : 'Clear Filters' }}
+        </a>
+    </div>
+    @endforelse
+</div>
+
+{{-- Script to Handle Heart Clicks --}}
+<script>
+    async function toggleFavorite(btn, e) {
+        e.preventDefault(); // Stop clicking the card link
+        e.stopPropagation(); // Really stop it
+
+        // Get data from attributes (Safe way)
+        const id = btn.dataset.id;
+        const title = btn.dataset.title;
+        const image = btn.dataset.image;
+        const category = btn.dataset.category;
+
+        try {
+            const response = await fetch("{{ route('recipe.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    recipe_id: id,
+                    title: title,
+                    image: image,
+                    category: category
+                })
+            });
+
+            const data = await response.json();
+
+            // Toggle Visuals
+            if (data.status === 'added') {
+                btn.classList.remove('bg-white/30', 'text-white');
+                btn.classList.add('bg-white', 'text-red-500');
+            } else {
+                btn.classList.add('bg-white/30', 'text-white');
+                btn.classList.remove('bg-white', 'text-red-500');
+                
+                // If on favorites tab, remove the card immediately
+                const urlParams = new URLSearchParams(window.location.search);
+                if(urlParams.get('tab') === 'favorites') {
+                    btn.closest('a').style.display = 'none';
+                }
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
-}
+</script>
 
-// Split instructions into steps
-$instructions = explode("\r\n", $recipe['strInstructions']);
-$instructions = array_filter($instructions, function($step) {
-    return !empty(trim($step));
-});
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($recipe['strMeal']); ?> - MealMatch</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #FFF5CF;
-            color: #333;
-        }
-
-        /* Header */
-        header {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .logo span:first-child {
-            color: #FF6B35;
-        }
-
-        nav a {
-            margin: 0 1rem;
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-        }
-
-        nav a:hover {
-            color: #FF6B35;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: white;
-            padding: 3rem 2rem;
-            margin: 2rem auto;
-            max-width: 1200px;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .hero-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: start;
-        }
-
-        .hero-text h3 {
-            color: #666;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .hero-text h1 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            line-height: 1.2;
-        }
-
-        .hero-text h1 span {
-            color: #FF6B35;
-        }
-
-        .recipe-meta {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .meta-icon {
-            width: 40px;
-            height: 40px;
-            background: #FFF5CF;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .meta-info h4 {
-            font-size: 0.8rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .meta-info p {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .tag {
-            background: #FFF5CF;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .hero-image {
-            position: relative;
-        }
-
-        .hero-image img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        /* Content Section */
-        .content {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-        }
-
-        .section {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .section h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .section h2 span {
-            color: #FF6B35;
-        }
-
-        .ingredients-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .ingredient-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            background: #FFF5CF;
-            border-radius: 8px;
-        }
-
-        .ingredient-item::before {
-            content: "•";
-            color: #FF6B35;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-
-        .instructions-section {
-            grid-column: 1 / -1;
-        }
-
-        .instruction-step {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            background: #FFF5CF;
-            border-radius: 10px;
-        }
-
-        .step-number {
-            background: #FF6B35;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .step-text {
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .video-section {
-            grid-column: 1 / -1;
-            text-align: center;
-        }
-
-        .video-container {
-            margin-top: 1.5rem;
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 15px;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 15px;
-        }
-
-        .back-button {
-            display: inline-block;
-            margin: 2rem auto;
-            padding: 1rem 2rem;
-            background: #FF6B35;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .back-button:hover {
-            background: #E55A2B;
-        }
-
-        @media (max-width: 768px) {
-            .hero-content {
-                grid-template-columns: 1fr;
-            }
-
-            .content {
-                grid-template-columns: 1fr;
-            }
-
-            .ingredients-list {
-                grid-template-columns: 1fr;
-            }
-
-            .instructions-section,
-            .video-section {
-                grid-column: 1;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="logo">
-            <span>FLAV</span><span style="color: #FF6B35;">ORIZ</span>
-        </div>
-        <nav>
-            <a href="index.php">HOME</a>
-            <a href="recipes.php">RECIPES</a>
-            <a href="about.php">ABOUT</a>
-        </nav>
-    </header>
-
-    <div class="hero">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h3>Let's Cook</h3>
-                <h1><?php echo htmlspecialchars($recipe['strMeal']); ?></h1>
-
-                <div class="recipe-meta">
-                    <div class="meta-item">
-                        <div class="meta-icon">🍽️</div>
-                        <div class="meta-info">
-                            <h4>Category</h4>
-                            <p><?php echo htmlspecialchars($recipe['strCategory']); ?></p>
-                        </div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-icon">🌍</div>
-                        <div class="meta-info">
-                            <h4>Cuisine</h4>
-                            <p><?php echo htmlspecialchars($recipe['strArea']); ?></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tags">
-                    <?php if ($recipe['strCategory']): ?>
-                        <span class="tag"><?php echo htmlspecialchars($recipe['strCategory']); ?></span>
-                    <?php endif; ?>
-                    <?php if ($recipe['strArea']): ?>
-                        <span class="tag"><?php echo htmlspecialchars($recipe['strArea']); ?></span>
-                    <?php endif; ?>
-                    <?php if ($recipe['strTags']): 
-                        $tags = explode(',', $recipe['strTags']);
-                        foreach ($tags as $tag): ?>
-                            <span class="tag"><?php echo htmlspecialchars(trim($tag)); ?></span>
-                        <?php endforeach;
-                    endif; ?>
-                </div>
-            </div>
-
-            <div class="hero-image">
-                <img src="<?php echo htmlspecialchars($recipe['strMealThumb']); ?>" alt="<?php echo htmlspecialchars($recipe['strMeal']); ?>">
-            </div>
-        </div>
-    </div>
-
-    <div class="content">
-        <div class="section">
-            <h2><span>Ingredients</span></h2>
-            <div class="ingredients-list">
-                <?php foreach ($ingredients as $item): ?>
-                    <div class="ingredient-item">
-                        <span><?php echo htmlspecialchars($item['measure'] . ' ' . $item['ingredient']); ?></span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-        <div class="section instructions-section">
-            <h2>Cooking <span>Instructions</span></h2>
-            <?php 
-            $stepNumber = 1;
-            foreach ($instructions as $step): 
-                if (!empty(trim($step))): ?>
-                    <div class="instruction-step">
-                        <div class="step-number"><?php echo str_pad($stepNumber, 2, '0', STR_PAD_LEFT); ?></div>
-                        <div class="step-text"><?php echo htmlspecialchars($step); ?></div>
-                    </div>
-                <?php 
-                $stepNumber++;
-                endif;
-            endforeach; ?>
-        </div>
-
-        <?php if (!empty($recipe['strYoutube'])): 
-            // Extract YouTube video ID
-            preg_match('/[?&]v=([^&]+)/', $recipe['strYoutube'], $matches);
-            $videoId = $matches[1] ?? '';
-            if ($videoId): ?>
-                <div class="section video-section">
-                    <h2>Video <span>Tutorial</span></h2>
-                    <div class="video-container">
-                        <iframe 
-                            src="https://www.youtube.com/embed/<?php echo htmlspecialchars($videoId); ?>" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-                </div>
-            <?php endif;
-        endif; ?>
-    </div>
-
-    <div style="text-align: center; padding-bottom: 3rem;">
-        <a href="index.php" class="back-button">← Back to Home</a>
-    </div>
-</body>
-</html>
+@endsection

@@ -122,6 +122,15 @@
                     </svg>
                 </a>
                 
+                {{-- NEW: Recipes Icon --}}
+                <a href="{{ route('recipes.index') }}" 
+                   class="sidebar-icon {{ request()->routeIs('recipes.*', 'recipe.show') ? 'active' : '' }}"
+                   title="All Recipes">
+                    <svg class="w-7 h-7 {{ request()->routeIs('recipes.*', 'recipe.show') ? 'text-orange-600' : 'text-gray-700' }}" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.25 4.533A9.707 9.707 0 0 0 6 3.75a9.707 9.707 0 0 0-5.25.782v13.593a.75.75 0 0 0 .916.71c.789-.25 1.638-.378 2.501-.378 1.97 0 3.8.7 5.25 1.883 1.45-1.183 3.28-1.883 5.25-1.883 1.97 0 3.8.7 5.25 1.883V6.662a9.71 9.71 0 0 0-5.25-1.883 9.707 9.707 0 0 0-5.25.782Z" />
+                    </svg>
+                </a>
+
                 {{-- Food Log --}}
                 <a href="{{ route('food-log.index') }}" 
                    class="sidebar-icon {{ request()->is('food-log*', 'log-food') ? 'active' : '' }}"

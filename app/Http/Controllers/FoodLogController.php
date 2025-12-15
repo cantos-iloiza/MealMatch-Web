@@ -26,7 +26,7 @@ class FoodLogController extends Controller
         
         // Initialize Firebase Admin SDK
         $this->firebase = (new Factory)
-            ->withServiceAccount(config('firebase.credentials.file'))
+            ->withServiceAccount(config('FIREBASE_CREDENTIALS'))
             ->createAuth();
     }
 
