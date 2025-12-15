@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Settings - MealMatch</title>
+@extends('layouts.app')
+
+@section('title', 'Settings - MealMatch')
+
+@push('styles')
     <style>
         * {
             margin: 0;
@@ -323,14 +321,18 @@
             height: 20px;
         }
     </style>
-</head>
-<body>
-    <div class="app-header">
+@endpush
+
+@section('page-title')
+    <h1 class="text-4xl font-bold">Settings</h1>
+@endsection
+
+@section('content')
+    <div class="app-header" style="background:none; box-shadow:none; padding:0; margin-bottom:16px;">
         <button class="back-btn" onclick="history.back()">←</button>
-        <h1>Settings</h1>
     </div>
 
-    <div class="container">
+    <div class="container" style="padding:0;">
         <div class="section-title">Account</div>
 
         <div class="setting-card">
@@ -1068,5 +1070,4 @@
             });
         });
     </script>
-</body>
-</html>
+@endsection

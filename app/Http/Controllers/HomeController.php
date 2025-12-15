@@ -21,10 +21,21 @@ class HomeController extends Controller
     {
         $this->mealDBService = $mealDBService;
         
-        // Initialize Firebase Admin SDK
-        $this->firebase = (new Factory())
-            ->withServiceAccount(storage_path(env('FIREBASE_CREDENTIALS_PATH')))
-            ->createAuth();
+        // Initialize Firebase Admin SDK (optional: skip if creds missing/invalid)
+        $creds = env('FIREBASE_CREDENTIALS_PATH');
+        $path = $creds ? storage_path($creds) : null;
+
+        if ($path && is_file($path)) {
+            $this->firebase = (new Factory())
+                ->withServiceAccount($path)
+                ->createAuth();
+        } else {
+            $this->firebase = null;
+            logger()->warning('Firebase credentials missing or invalid; HomeController will run in guest mode', [
+                'configured_path' => $creds,
+                'resolved_path' => $path,
+            ]);
+        }
     }
 
     /**
@@ -307,6 +318,10 @@ class HomeController extends Controller
                    ?? $request->bearerToken();
         
         if (!$idToken) {
+            return null;
+        }
+
+        if (!$this->firebase) {
             return null;
         }
 
