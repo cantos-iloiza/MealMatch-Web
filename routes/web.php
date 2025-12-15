@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FoodLogController;
 use App\Http\Controllers\ModifyFoodController;
+use App\Http\Controllers\ProfileController;
 
 // Home routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -37,3 +38,5 @@ Route::post('/food-log/add-recipe', [FoodLogController::class, 'addRecipeToMeal'
 Route::get('/modify-food', [ModifyFoodController::class, 'show'])->name('modify-food.show');
 Route::post('/modify-food/set-item', [ModifyFoodController::class, 'setFoodItem'])->name('modify-food.set-item');
 Route::post('/modify-food/add', [ModifyFoodController::class, 'addFood'])->name('modify-food.add');
+
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
