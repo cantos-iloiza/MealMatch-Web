@@ -153,12 +153,12 @@
     <div class="flex min-h-screen">
         {{-- Left Sidebar --}}
         <aside class="w-32 bg-white/70 backdrop-blur-sm shadow-xl fixed left-0 top-0 h-full flex flex-col items-center py-8 space-y-6 z-50 rounded-r-3xl">
-            {{-- Logo --}}
-            <a href="{{ route('home') }}" class="mb-4">
-                <div class="w-14 h-14 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
-                    <span class="text-orange text-2xl font-bold font-museo">M</span>
-                </div>
-            </a>
+        {{-- Logo --}}
+        <a href="{{ route('home') }}" class="mb-4">
+            <img src="{{ asset('assets/images/header_logo.png') }}" 
+            alt="MealMatch Logo" 
+            class="w-16 h-16 hover:scale-105 transition-opacity-50 transition-transform">
+        </a>
             
             {{-- Navigation Icons --}}
             <div class="flex-1 flex flex-col space-y-4">

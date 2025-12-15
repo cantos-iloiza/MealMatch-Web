@@ -75,3 +75,19 @@ Route::get('/api/profile/average-calories', [ProfileController::class, 'getAvera
 Route::get('/api/profile/logs-by-date', [ProfileController::class, 'getLogsGroupedByCategory'])->name('profile.logs.by.date');
 Route::get('/api/profile/logs-range', [ProfileController::class, 'getLogsInRange'])->name('profile.logs.range');
 
+// ====== PROFILE PAGE ROUTE ======
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+// ====== PROFILE MODAL API ENDPOINTS ======
+// These are used by the modal in app.blade.php
+Route::get('/api/profile/modal-data', [ProfileController::class, 'getModalProfileData'])->name('profile.modal.data');
+Route::post('/api/logout', [ProfileController::class, 'logout'])->name('logout');
+
+// ====== PROFILE PAGE API ENDPOINTS ======
+// These are used by profile.blade.php
+Route::get('/api/profile/user-data', [ProfileController::class, 'getUserData'])->name('profile.user.data');
+Route::get('/api/profile/weekly-streak', [ProfileController::class, 'getWeeklyStreak'])->name('profile.weekly.streak');
+Route::get('/api/profile/highest-streak', [ProfileController::class, 'getHighestStreak'])->name('profile.highest.streak');
+Route::get('/api/profile/average-calories', [ProfileController::class, 'getAverageCalories'])->name('profile.average.calories');
+Route::get('/api/profile/logs-by-date', [ProfileController::class, 'getLogsGroupedByCategory'])->name('profile.logs.by.date');
+Route::get('/api/profile/logs-range', [ProfileController::class, 'getLogsInRange'])->name('profile.logs.range');
