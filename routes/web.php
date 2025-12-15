@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Kreait\Firebase\Factory;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecipeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,4 +32,13 @@ Route::get('/test-firebase', function () {
     }
 });
 
+// Profile routes
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+
+// Recipe routes
+Route::get('/recipe/{id}', [RecipeController::class, 'show'])->name('recipe.show');
+
+// Recipe API endpoints (for favorites functionality)
+Route::post('/api/recipe/favorite', [RecipeController::class, 'saveFavorite'])->name('recipe.favorite.save');
+Route::get('/api/recipe/favorites', [RecipeController::class, 'getFavorites'])->name('recipe.favorites');
+Route::delete('/api/recipe/favorite', [RecipeController::class, 'removeFavorite'])->name('recipe.favorite.remove');
