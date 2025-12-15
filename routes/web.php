@@ -1,36 +1,44 @@
 <?php
+// routes/web.php
 
 use Illuminate\Support\Facades\Route;
-use Kreait\Firebase\Factory;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\FoodLogController;
+use App\Http\Controllers\ModifyFoodController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Home routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/load-recipes', [HomeController::class, 'loadRecipes'])->name('load-recipes');
+Route::get('/refresh-calories', [HomeController::class, 'refreshCalories'])->name('refresh-calories');
+Route::get('/recipe/{id}', function($id) {
+    return view('recipe-detail', compact('id'));
+})->name('recipe.show');
 
-Route::get('/test-firebase', function () {
-    try {
-        // Version 7.x syntax
-        $factory = (new Factory)->withServiceAccount(
-            storage_path('firebase/mealmatch-web-firebase-adminsdk-fbsvc-7cc8a28f53.json')
-        );
-        
-        $database = $factory->createDatabase();
-        
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Firebase connection working!',
-            'version' => '7.24.0'
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage()
-        ]);
-    }
-});
+// Notifications route
+Route::get('/notifications', function () {
+    return view('notifications');
+})->name('notifications');
+
+// What Can I Cook route (ADD THIS)
+Route::get('/what-can-i-cook', function () {
+    return view('whatcanicook');
+})->name('whatcanicook');
+
+// Food log routes
+Route::get('/food-log', [FoodLogController::class, 'index'])->name('food-log.index');
+Route::post('/food-log/select-meal', [FoodLogController::class, 'selectMeal'])->name('food-log.select-meal');
+Route::post('/food-log/add', [FoodLogController::class, 'addToMeal'])->name('food-log.add');
+Route::get('/food-log/search', [FoodLogController::class, 'search'])->name('food-log.search');
+Route::get('/food-log/favorites', [FoodLogController::class, 'favorites'])->name('food-log.favorites');
+Route::get('/food-log/my-recipes', [FoodLogController::class, 'myRecipes'])->name('food-log.my-recipes');
+Route::post('/food-log/add-recipe', [FoodLogController::class, 'addRecipeToMeal'])->name('food-log.add-recipe');
+
+// Modify food routes
+Route::get('/modify-food', [ModifyFoodController::class, 'show'])->name('modify-food.show');
+Route::post('/modify-food/set-item', [ModifyFoodController::class, 'setFoodItem'])->name('modify-food.set-item');
+Route::post('/modify-food/add', [ModifyFoodController::class, 'addFood'])->name('modify-food.add');
 
 // Profile routes
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
