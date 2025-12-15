@@ -23,6 +23,135 @@ class ProfileController extends Controller
     }
     
     /**
+     * ====== PROFILE MODAL API ENDPOINTS ======
+     * These methods handle the profile modal data
+     */
+    
+    /**
+     * Get user profile data for modal
+     * Matches Flutter: FirebaseService.getUserData()
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getModalProfileData(Request $request)
+    {
+        try {
+            /* ========================================
+             * UNCOMMENT THIS SECTION TO USE REAL FIREBASE DATA
+             * ========================================
+             */
+            
+            // $factory = (new Factory)->withServiceAccount(
+            //     storage_path('firebase/mealmatch-web-firebase-adminsdk-fbsvc-7cc8a28f53.json')
+            // );
+            
+            // $firestore = $factory->createFirestore();
+            // $database = $firestore->database();
+            
+            // // Get current user ID from session/auth
+            // $userId = $request->user_id ?? session('firebase_uid');
+            
+            // if (!$userId) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Not authenticated'
+            //     ], 401);
+            // }
+            
+            // // Fetch user document from Firestore
+            // $userRef = $database->collection('users')->document($userId);
+            // $userSnapshot = $userRef->snapshot();
+            
+            // if ($userSnapshot->exists()) {
+            //     $userData = $userSnapshot->data();
+            //     
+            //     return response()->json([
+            //         'success' => true,
+            //         'data' => [
+            //             'name' => $userData['name'] ?? 'User',
+            //             'email' => $userData['email'] ?? 'email@example.com',
+            //             'avatar' => $userData['photoURL'] ?? null,
+            //         ]
+            //     ]);
+            // } else {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'User not found'
+            //     ], 404);
+            // }
+            
+            /* ========================================
+             * END REAL FIREBASE BACKEND
+             * ======================================== */
+            
+            // FAKE DATA - For development/testing only
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'name' => 'Guest',
+                    'email' => 'Not logged in',
+                    'avatar' => null
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Handle user logout
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout(Request $request)
+    {
+        try {
+            /* ========================================
+             * UNCOMMENT THIS SECTION FOR REAL FIREBASE LOGOUT
+             * ========================================
+             */
+            
+            // // Clear Firebase session
+            // $request->session()->forget('firebase_token');
+            // $request->session()->forget('firebase_uid');
+            // $request->session()->flush();
+            
+            // return response()->json([
+            //     'success' => true,
+            //     'message' => 'Logged out successfully'
+            // ]);
+            
+            /* ========================================
+             * END REAL FIREBASE LOGOUT
+             * ======================================== */
+            
+            // FAKE LOGOUT - For development
+            $request->session()->flush();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Logged out successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * ====== END PROFILE MODAL API ENDPOINTS ======
+     */
+    
+    /**
      * Get user profile data from Firebase
      * Matches Flutter: FirebaseService.getUserData()
      * 
@@ -447,78 +576,6 @@ class ProfileController extends Controller
              * UNCOMMENT TO USE REAL FIREBASE DATA
              * ======================================== */
             
-            // $factory = (new Factory)->withServiceAccount(
-            //     storage_path('firebase/mealmatch-web-firebase-adminsdk-fbsvc-7cc8a28f53.json')
-            // );
-            
-            // $firestore = $factory->createFirestore();
-            // $database = $firestore->database();
-            
-            // $userId = $request->user_id ?? auth()->id();
-            
-            // // Query meal_logs for date range
-            // $mealLogsRef = $database->collection('users')->document($userId)->collection('meal_logs');
-            // $query = $mealLogsRef
-            //     ->where('date', '>=', $startDate)
-            //     ->where('date', '<=', $endDate);
-            
-            // $documents = $query->documents();
-            
-            // $logsByDate = [];
-            // foreach ($documents as $doc) {
-            //     if ($doc->exists()) {
-            //         $data = $doc->data();
-            //         $date = $data['date'];
-            //         
-            //         if (!isset($logsByDate[$date])) {
-            //             $logsByDate[$date] = [
-            //                 'Breakfast' => [],
-            //                 'Lunch' => [],
-            //                 'Dinner' => [],
-            //                 'Snacks' => []
-            //             ];
-            //         }
-            //         
-            //         $log = [
-            //             'id' => $doc->id(),
-            //             'foodName' => $data['foodName'] ?? 'Unknown Food',
-            //             'calories' => $data['calories'] ?? 0,
-            //             'carbs' => $data['carbs'] ?? 0,
-            //             'proteins' => $data['proteins'] ?? 0,
-            //             'fats' => $data['fats'] ?? 0,
-            //             'serving' => $data['serving'] ?? '',
-            //             'brand' => $data['brand'] ?? '',
-            //             'category' => $data['category'] ?? 'Snacks',
-            //             'timestamp' => $data['timestamp'] ?? null,
-            //             'isVerified' => $data['isVerified'] ?? false,
-            //             'source' => $data['source'] ?? ''
-            //         ];
-            //         
-            //         $category = $log['category'];
-            //         if (isset($logsByDate[$date][$category])) {
-            //             $logsByDate[$date][$category][] = $log;
-            //         }
-            //     }
-            // }
-            
-            // // Sort each category by timestamp
-            // foreach ($logsByDate as $date => $grouped) {
-            //     foreach ($grouped as $category => $logs) {
-            //         usort($logsByDate[$date][$category], function($a, $b) {
-            //             return $b['timestamp'] <=> $a['timestamp'];
-            //         });
-            //     }
-            // }
-            
-            // return response()->json([
-            //     'success' => true,
-            //     'data' => $logsByDate
-            // ]);
-            
-            /* ========================================
-             * END REAL FIREBASE BACKEND
-             * ======================================== */
-            
             // FAKE DATA - Filter fake logs by date range
             $fakeLogs = $this->getFakeMealLogs();
             $filtered = [];
@@ -573,48 +630,20 @@ class ProfileController extends Controller
     {
         // Same structure as JavaScript getFakeMealLogs()
         return [
-            '2025-12-08' => [
-                'Breakfast' => [
-                    ['id' => 'log1', 'foodName' => 'Scrambled Eggs', 'calories' => 200, 'carbs' => 2, 'proteins' => 12, 'fats' => 15, 'serving' => '2 eggs', 'brand' => '', 'category' => 'Breakfast', 'timestamp' => '2025-12-08T07:00:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log2', 'foodName' => 'Whole Wheat Toast', 'calories' => 150, 'carbs' => 28, 'proteins' => 6, 'fats' => 2, 'serving' => '2 slices', 'brand' => '', 'category' => 'Breakfast', 'timestamp' => '2025-12-08T07:05:00', 'isVerified' => true, 'source' => 'USDA']
-                ],
-                'Lunch' => [
-                    ['id' => 'log3', 'foodName' => 'Chicken Salad', 'calories' => 350, 'carbs' => 15, 'proteins' => 30, 'fats' => 18, 'serving' => '1 bowl', 'brand' => '', 'category' => 'Lunch', 'timestamp' => '2025-12-08T12:00:00', 'isVerified' => false, 'source' => ''],
-                    ['id' => 'log4', 'foodName' => 'Rice', 'calories' => 200, 'carbs' => 45, 'proteins' => 4, 'fats' => 0.5, 'serving' => '1 cup', 'brand' => '', 'category' => 'Lunch', 'timestamp' => '2025-12-08T12:10:00', 'isVerified' => true, 'source' => 'USDA']
-                ],
-                'Dinner' => [
-                    ['id' => 'log5', 'foodName' => 'Grilled Fish', 'calories' => 400, 'carbs' => 0, 'proteins' => 45, 'fats' => 22, 'serving' => '200g', 'brand' => '', 'category' => 'Dinner', 'timestamp' => '2025-12-08T18:00:00', 'isVerified' => true, 'source' => 'OFF'],
-                    ['id' => 'log6', 'foodName' => 'Vegetables', 'calories' => 100, 'carbs' => 20, 'proteins' => 3, 'fats' => 1, 'serving' => '1 cup', 'brand' => '', 'category' => 'Dinner', 'timestamp' => '2025-12-08T18:15:00', 'isVerified' => true, 'source' => 'USDA']
-                ],
-                'Snacks' => [
-                    ['id' => 'log7', 'foodName' => 'Nuts', 'calories' => 200, 'carbs' => 8, 'proteins' => 6, 'fats' => 18, 'serving' => '30g', 'brand' => '', 'category' => 'Snacks', 'timestamp' => '2025-12-08T15:00:00', 'isVerified' => false, 'source' => ''],
-                    ['id' => 'log8', 'foodName' => 'Fruit', 'calories' => 250, 'carbs' => 60, 'proteins' => 2, 'fats' => 0.5, 'serving' => '1 apple', 'brand' => '', 'category' => 'Snacks', 'timestamp' => '2025-12-08T20:00:00', 'isVerified' => true, 'source' => 'USDA']
-                ]
-            ],
-            // Add more dates as needed...
             '2025-12-14' => [
                 'Breakfast' => [
                     ['id' => 'log42', 'foodName' => 'Oatmeal with Blueberries', 'calories' => 150, 'carbs' => 27, 'proteins' => 5, 'fats' => 3, 'serving' => '1 bowl', 'brand' => '', 'category' => 'Breakfast', 'timestamp' => '2025-12-14T07:00:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log43', 'foodName' => 'Banana', 'calories' => 105, 'carbs' => 27, 'proteins' => 1, 'fats' => 0, 'serving' => '1 medium', 'brand' => '', 'category' => 'Breakfast', 'timestamp' => '2025-12-14T07:10:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log44', 'foodName' => 'Black Coffee', 'calories' => 5, 'carbs' => 0, 'proteins' => 0, 'fats' => 0, 'serving' => '1 cup', 'brand' => '', 'category' => 'Breakfast', 'timestamp' => '2025-12-14T07:15:00', 'isVerified' => true, 'source' => 'USDA']
                 ],
                 'Lunch' => [
                     ['id' => 'log45', 'foodName' => 'Grilled Chicken Breast', 'calories' => 284, 'carbs' => 0, 'proteins' => 53, 'fats' => 6, 'serving' => '200g', 'brand' => '', 'category' => 'Lunch', 'timestamp' => '2025-12-14T12:30:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log46', 'foodName' => 'Brown Rice', 'calories' => 216, 'carbs' => 45, 'proteins' => 5, 'fats' => 2, 'serving' => '1 cup', 'brand' => '', 'category' => 'Lunch', 'timestamp' => '2025-12-14T12:35:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log47', 'foodName' => 'Steamed Broccoli', 'calories' => 55, 'carbs' => 11, 'proteins' => 4, 'fats' => 0.5, 'serving' => '1 cup', 'brand' => '', 'category' => 'Lunch', 'timestamp' => '2025-12-14T12:40:00', 'isVerified' => true, 'source' => 'USDA']
                 ],
                 'Dinner' => [
                     ['id' => 'log48', 'foodName' => 'Baked Salmon', 'calories' => 367, 'carbs' => 0, 'proteins' => 40, 'fats' => 22, 'serving' => '150g', 'brand' => '', 'category' => 'Dinner', 'timestamp' => '2025-12-14T19:00:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log49', 'foodName' => 'Roasted Sweet Potato', 'calories' => 112, 'carbs' => 26, 'proteins' => 2, 'fats' => 0, 'serving' => '1 medium', 'brand' => '', 'category' => 'Dinner', 'timestamp' => '2025-12-14T19:15:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log50', 'foodName' => 'Grilled Asparagus', 'calories' => 40, 'carbs' => 8, 'proteins' => 4, 'fats' => 0, 'serving' => '6 spears', 'brand' => '', 'category' => 'Dinner', 'timestamp' => '2025-12-14T19:20:00', 'isVerified' => true, 'source' => 'USDA']
                 ],
                 'Snacks' => [
                     ['id' => 'log51', 'foodName' => 'Apple', 'calories' => 95, 'carbs' => 25, 'proteins' => 0, 'fats' => 0, 'serving' => '1 medium', 'brand' => '', 'category' => 'Snacks', 'timestamp' => '2025-12-14T15:00:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log52', 'foodName' => 'Almonds (1 oz)', 'calories' => 164, 'carbs' => 6, 'proteins' => 6, 'fats' => 14, 'serving' => '23 almonds', 'brand' => '', 'category' => 'Snacks', 'timestamp' => '2025-12-14T17:00:00', 'isVerified' => true, 'source' => 'USDA'],
-                    ['id' => 'log53', 'foodName' => 'Greek Yogurt', 'calories' => 84, 'carbs' => 6, 'proteins' => 15, 'fats' => 0, 'serving' => '170g', 'brand' => '', 'category' => 'Snacks', 'timestamp' => '2025-12-14T20:00:00', 'isVerified' => true, 'source' => 'USDA']
                 ]
             ],
-            // Include rest of week data...
         ];
     }
 }
