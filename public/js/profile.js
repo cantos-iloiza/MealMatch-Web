@@ -634,8 +634,8 @@ window.updateDateRange = async function() {
         return;
     }
     
-    const fromDate = new Date(fromDateStr);
-    const toDate = new Date(toDateStr);
+    const fromDate = new Date(fromDateStr + 'T00:00:00');
+    const toDate = new Date(toDateStr + 'T00:00:00');
     
     if (fromDate > toDate) {
         alert('Start date must be before end date');
@@ -700,6 +700,7 @@ window.updateDateRange = async function() {
                 meals: meals
             });
             
+            // Properly increment date
             current.setDate(current.getDate() + 1);
         }
         

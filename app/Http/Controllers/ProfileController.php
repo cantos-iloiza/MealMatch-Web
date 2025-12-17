@@ -156,20 +156,20 @@ class ProfileController extends Controller
             // FAKE DATA - Filter fake logs by date range
             $fakeLogs = $this->getFakeMealLogs();
             $filtered = [];
-            
-            $current = clone $start;
-            
-            while ($current <= $end) {
-                $dateStr = $current->format('Y-m-d');
+
+            $currentDate = clone $start;
+
+            while ($currentDate <= $end) {
+                $dateStr = $currentDate->format('Y-m-d');
                 $filtered[$dateStr] = $fakeLogs[$dateStr] ?? [
                     'Breakfast' => [],
                     'Lunch' => [],
                     'Dinner' => [],
                     'Snacks' => []
                 ];
-                $current->modify('+1 day');
+                $currentDate->add(new \DateInterval('P1D')); // Add 1 day properly
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $filtered
