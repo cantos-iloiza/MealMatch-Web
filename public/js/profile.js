@@ -1,145 +1,116 @@
 // resources/js/profile.js
 
-// ====== FIREBASE IMPORTS - COMMENTED FOR NOW ======
-// Uncomment these when ready to use Firebase
-// import { auth, db, storage } from './config/firebase';
-// import { onAuthStateChanged } from 'firebase/auth';
-// import { collection, query, where, getDocs, doc, getDoc, orderBy, Timestamp } from 'firebase/firestore';
-// ====== END FIREBASE IMPORTS ======
-
 let currentUserId = null;
 let currentView = 'today'; // 'today', 'thisWeek', 'custom'
 let weeklyData = []; // Store weekly data globally
-let foodLogsCache = {}; // Cache for meal logs by date (matches Flutter)
+let foodLogsCache = {}; // Cache for meal logs by date
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Profile page loaded - Using FAKE DATA for development');
+    console.log('Profile page loaded - Loading real data from Firebase');
     initializeProfile();
 });
 
 // Main initialization function
 async function initializeProfile() {
     try {
-        /* ====== FIREBASE AUTH - COMMENTED FOR NOW ======
-         * Uncomment when ready to use Firebase authentication
-         */
-        
-        // onAuthStateChanged(auth, async (user) => {
-        //     if (user) {
-        //         currentUserId = user.uid;
-        //         await loadRealData();
-        //     } else {
-        //         window.location.href = '/login';
-        //     }
-        // });
-        
-        /* ====== END FIREBASE AUTH ====== */
-        
-        // FAKE DATA - Load mock data for development
-        currentUserId = 'mock-user-123';
-        loadFakeData();
-        
+        await loadRealData();
     } catch (error) {
         console.error('Error initializing profile:', error);
-        loadFakeData();
+        showErrorMessage('Unable to load profile data. Please refresh the page.');
     }
 }
 
-// ====== FAKE DATA FUNCTIONS (For Development) ======
+// ====== REAL DATA FUNCTIONS (Firebase Backend) ======
 
-function loadFakeData() {
-    loadTodayView();
-    loadFakeProfile();
-    loadFakeStreak();
-    loadFakeStats();
+async function loadRealData() {
+    try {
+        // Load all profile data in parallel
+        await Promise.all([
+            loadTodayView(),
+            loadRealProfile(),
+            loadRealStreak(),
+            loadRealStats()
+        ]);
+    } catch (error) {
+        console.error('Error loading real data:', error);
+        showErrorMessage('Unable to connect to server. Please check your connection and try again.');
+    }
 }
 
-function loadFakeProfile() {
-    const name = 'Hermione';
-    document.getElementById('userName').textContent = name;
-    document.getElementById('userEmail').textContent = 'mealmatch03@email.com';
-}
-
-function loadFakeStreak() {
-    const streakDays = 2; // Only 2 days this week (Sunday Dec 14 and Monday Dec 15)
-    document.getElementById('streakText').textContent = `${streakDays} days logged`;
-    
-    // Update circles - only first 2 circles (S and M) should be orange
-    const circles = document.querySelectorAll('.day-circle');
-    circles.forEach((circle, index) => {
-        if (index < 2) { // Only circles 1 and 2 (index 0 and 1)
-            circle.classList.remove('bg-white/50', 'text-gray-400');
-            circle.classList.add('bg-[#f7941d]', 'text-white');
+async function loadRealProfile() {
+    try {
+        const response = await fetch('/api/profile/user-data');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const data = result.data;
+            document.getElementById('userName').textContent = data.name || 'User';
+            document.getElementById('userEmail').textContent = data.email || 'Logged in';
+            
+            // Handle avatar/photo URL if available
+            if (data.photoURL) {
+                const avatarContainer = document.getElementById('profile-avatar-container');
+                avatarContainer.innerHTML = `<img src="${data.photoURL}" alt="Profile" class="w-full h-full object-cover">`;
+            }
         } else {
-            circle.classList.remove('bg-[#f7941d]', 'text-white');
-            circle.classList.add('bg-white/50', 'text-gray-400');
+            console.warn('Failed to load user profile:', result.message);
+            // Keep default values in UI
         }
-    });
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        // Keep default values in UI
+    }
 }
 
-function loadFakeStats() {
-    document.getElementById('highestStreak').textContent = '2';
-    document.getElementById('avgCalories').textContent = '1850';
+async function loadRealStreak() {
+    try {
+        const response = await fetch('/api/profile/weekly-streak');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const streakDays = result.data.weeklyStreak || 0;
+            document.getElementById('streakText').textContent = `${streakDays} days logged`;
+            
+            // Update circles
+            const circles = document.querySelectorAll('.day-circle');
+            circles.forEach((circle, index) => {
+                if (index < streakDays) {
+                    circle.classList.remove('bg-white/50', 'text-gray-400');
+                    circle.classList.add('bg-[#f7941d]', 'text-white');
+                } else {
+                    circle.classList.remove('bg-[#f7941d]', 'text-white');
+                    circle.classList.add('bg-white/50', 'text-gray-400');
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error loading streak:', error);
+        // Keep default values in UI
+    }
 }
 
-// FAKE DATA - Mimics Flutter's meal_logs structure
-function getFakeMealLogs() {
-    return {
-        '2025-12-14': {
-            'Breakfast': [
-                { id: 'log1', foodName: 'Oatmeal with Blueberries', calories: 150, carbs: 27, proteins: 5, fats: 3, serving: '1 bowl', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log2', foodName: 'Banana', calories: 105, carbs: 27, proteins: 1, fats: 0, serving: '1 medium', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:10:00'), isVerified: true, source: 'USDA' },
-                { id: 'log3', foodName: 'Black Coffee', calories: 5, carbs: 0, proteins: 0, fats: 0, serving: '1 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-14T07:15:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log4', foodName: 'Grilled Chicken Breast', calories: 284, carbs: 0, proteins: 53, fats: 6, serving: '200g', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:30:00'), isVerified: true, source: 'USDA' },
-                { id: 'log5', foodName: 'Brown Rice', calories: 216, carbs: 45, proteins: 5, fats: 2, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:35:00'), isVerified: true, source: 'USDA' },
-                { id: 'log6', foodName: 'Steamed Broccoli', calories: 55, carbs: 11, proteins: 4, fats: 0.5, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-14T12:40:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Dinner': [
-                { id: 'log7', foodName: 'Baked Salmon', calories: 367, carbs: 0, proteins: 40, fats: 22, serving: '150g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log8', foodName: 'Roasted Sweet Potato', calories: 112, carbs: 26, proteins: 2, fats: 0, serving: '1 medium', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:15:00'), isVerified: true, source: 'USDA' },
-                { id: 'log9', foodName: 'Grilled Asparagus', calories: 40, carbs: 8, proteins: 4, fats: 0, serving: '6 spears', brand: '', category: 'Dinner', timestamp: new Date('2025-12-14T19:20:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Snacks': [
-                { id: 'log10', foodName: 'Apple', calories: 95, carbs: 25, proteins: 0, fats: 0, serving: '1 medium', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T15:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log11', foodName: 'Almonds (1 oz)', calories: 164, carbs: 6, proteins: 6, fats: 14, serving: '23 almonds', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T17:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log12', foodName: 'Greek Yogurt', calories: 84, carbs: 6, proteins: 15, fats: 0, serving: '170g', brand: '', category: 'Snacks', timestamp: new Date('2025-12-14T20:00:00'), isVerified: true, source: 'USDA' }
-            ]
-        },
-        '2025-12-15': {
-            'Breakfast': [
-                { id: 'log13', foodName: 'Scrambled Eggs', calories: 200, carbs: 2, proteins: 12, fats: 15, serving: '2 eggs', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-15T07:00:00'), isVerified: true, source: 'USDA' },
-                { id: 'log14', foodName: 'Whole Wheat Toast', calories: 150, carbs: 28, proteins: 6, fats: 2, serving: '2 slices', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-15T07:05:00'), isVerified: true, source: 'USDA' },
-                { id: 'log15', foodName: 'Orange Juice', calories: 110, carbs: 26, proteins: 2, fats: 0, serving: '1 cup', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-15T07:10:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log16', foodName: 'Chicken Salad', calories: 350, carbs: 15, proteins: 30, fats: 18, serving: '1 bowl', brand: '', category: 'Lunch', timestamp: new Date('2025-12-15T12:00:00'), isVerified: false, source: '' },
-                { id: 'log17', foodName: 'Rice', calories: 200, carbs: 45, proteins: 4, fats: 0.5, serving: '1 cup', brand: '', category: 'Lunch', timestamp: new Date('2025-12-15T12:10:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Dinner': [
-                { id: 'log18', foodName: 'Grilled Fish', calories: 400, carbs: 0, proteins: 45, fats: 22, serving: '200g', brand: '', category: 'Dinner', timestamp: new Date('2025-12-15T18:00:00'), isVerified: true, source: 'OFF' },
-                { id: 'log19', foodName: 'Vegetables', calories: 100, carbs: 20, proteins: 3, fats: 1, serving: '1 cup', brand: '', category: 'Dinner', timestamp: new Date('2025-12-15T18:15:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Snacks': [
-                { id: 'log20', foodName: 'Nuts', calories: 200, carbs: 8, proteins: 6, fats: 18, serving: '30g', brand: '', category: 'Snacks', timestamp: new Date('2025-12-15T15:00:00'), isVerified: false, source: '' },
-                { id: 'log21', foodName: 'Fruit', calories: 250, carbs: 60, proteins: 2, fats: 0.5, serving: '1 apple', brand: '', category: 'Snacks', timestamp: new Date('2025-12-15T20:00:00'), isVerified: true, source: 'USDA' }
-            ]
-        },
-        '2025-12-10': {
-            'Breakfast': [
-                { id: 'log22', foodName: 'Pancakes', calories: 350, carbs: 60, proteins: 8, fats: 10, serving: '3 pancakes', brand: '', category: 'Breakfast', timestamp: new Date('2025-12-10T08:00:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Lunch': [
-                { id: 'log23', foodName: 'Burger', calories: 550, carbs: 45, proteins: 30, fats: 25, serving: '1 burger', brand: '', category: 'Lunch', timestamp: new Date('2025-12-10T13:00:00'), isVerified: false, source: '' }
-            ],
-            'Dinner': [
-                { id: 'log24', foodName: 'Pizza', calories: 600, carbs: 70, proteins: 25, fats: 22, serving: '3 slices', brand: '', category: 'Dinner', timestamp: new Date('2025-12-10T19:00:00'), isVerified: true, source: 'USDA' }
-            ],
-            'Snacks': []
+async function loadRealStats() {
+    try {
+        // Load highest streak
+        const streakResponse = await fetch('/api/profile/highest-streak');
+        const streakResult = await streakResponse.json();
+        
+        if (streakResult.success && streakResult.data) {
+            document.getElementById('highestStreak').textContent = streakResult.data.highestStreak || 0;
         }
-    };
+        
+        // Load average calories
+        const caloriesResponse = await fetch('/api/profile/average-calories');
+        const caloriesResult = await caloriesResponse.json();
+        
+        if (caloriesResult.success && caloriesResult.data) {
+            document.getElementById('avgCalories').textContent = caloriesResult.data.averageCalories || 0;
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+        // Keep default values in UI
+    }
 }
 
 // Helper: Calculate total calories from meal logs
@@ -148,80 +119,143 @@ function calculateTotalCalories(logs) {
 }
 
 // Helper: Get logs grouped by category for a date
-function getLogsGroupedByCategory(dateStr) {
-    const allLogs = getFakeMealLogs();
-    return allLogs[dateStr] || {
-        'Breakfast': [],
-        'Lunch': [],
-        'Dinner': [],
-        'Snacks': []
-    };
-}
-
-// ====== VIEW SWITCHING FUNCTIONS ======
-
-function loadTodayView() {
-    currentView = 'today';
-    updateFilterButtons('today');
-    
-    const todayData = getLogsGroupedByCategory('2025-12-15');
-    
-    const allLogs = [...todayData.Breakfast, ...todayData.Lunch, ...todayData.Dinner, ...todayData.Snacks];
-    const totalLogged = calculateTotalCalories(allLogs);
-    const goal = 2000;
-    const remaining = goal - totalLogged;
-    const status = totalLogged > goal ? 'Over Goal' : 'On Track';
-    
-    renderTodayView({
-        date: '2025-12-15',
-        dayName: 'Monday',
-        dayNum: 15,
-        month: 'Dec',
-        goal: goal,
-        logged: totalLogged,
-        remaining: remaining,
-        status: status,
-        meals: todayData
-    });
-}
-
-function loadThisWeekView() {
-    currentView = 'thisWeek';
-    updateFilterButtons('thisWeek');
-    
-    const fakeLogs = getFakeMealLogs();
-    const weekDates = ['2025-12-14', '2025-12-15', '2025-12-16', '2025-12-17', '2025-12-18', '2025-12-19', '2025-12-20'];
-    
-    weeklyData = weekDates.map(dateStr => {
-        const meals = fakeLogs[dateStr] || {
+async function getLogsGroupedByCategory(dateStr) {
+    try {
+        const response = await fetch(`/api/profile/logs-by-date?date=${dateStr}`);
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            return result.data;
+        }
+        
+        console.warn('No logs found for date:', dateStr);
+        return {
             'Breakfast': [],
             'Lunch': [],
             'Dinner': [],
             'Snacks': []
         };
-        const allLogs = [...meals.Breakfast, ...meals.Lunch, ...meals.Dinner, ...meals.Snacks];
-        const totalLogged = calculateTotalCalories(allLogs);
-        const goal = 2000;
-        const remaining = goal - totalLogged;
-        
-        const date = new Date(dateStr);
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
+    } catch (error) {
+        console.error('Error fetching logs for date:', dateStr, error);
         return {
-            date: dateStr,
-            dayName: dayNames[date.getDay()],
-            dayNum: date.getDate(),
-            month: months[date.getMonth()],
+            'Breakfast': [],
+            'Lunch': [],
+            'Dinner': [],
+            'Snacks': []
+        };
+    }
+}
+
+// ====== VIEW SWITCHING FUNCTIONS ======
+
+async function loadTodayView() {
+    currentView = 'today';
+    updateFilterButtons('today');
+    
+    try {
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date();
+        const todayStr = formatDate(today);
+        
+        const todayData = await getLogsGroupedByCategory(todayStr);
+        
+        const allLogs = [...todayData.Breakfast, ...todayData.Lunch, ...todayData.Dinner, ...todayData.Snacks];
+        const totalLogged = calculateTotalCalories(allLogs);
+        const goal = 2000; // You can fetch this from user profile if needed
+        const remaining = goal - totalLogged;
+        const status = totalLogged > goal ? 'Over Goal' : 'On Track';
+        
+        renderTodayView({
+            date: todayStr,
+            dayName: today.toLocaleDateString('en-US', { weekday: 'long' }),
+            dayNum: today.getDate(),
+            month: today.toLocaleDateString('en-US', { month: 'short' }),
             goal: goal,
             logged: totalLogged,
             remaining: remaining,
-            status: totalLogged === 0 ? 'No Logs' : totalLogged > goal ? 'Over Goal' : 'On Track',
-            meals: meals
-        };
-    });
+            status: status,
+            meals: todayData
+        });
+    } catch (error) {
+        console.error('Error loading today view:', error);
+        const container = document.getElementById('logContent');
+        container.innerHTML = renderErrorState('Unable to load today\'s logs. Please try again.');
+    }
+}
+
+async function loadThisWeekView() {
+    currentView = 'thisWeek';
+    updateFilterButtons('thisWeek');
     
-    renderWeeklyOverview(weeklyData);
+    try {
+        const container = document.getElementById('logContent');
+        container.innerHTML = `
+            <div class="text-center py-24">
+                <div class="mb-6">
+                    <i class="fas fa-spinner fa-spin text-[#6b9080] text-6xl"></i>
+                </div>
+                <p class="text-gray-600 text-lg">Loading weekly logs...</p>
+            </div>
+        `;
+        
+        const today = new Date();
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay()); // Get Sunday
+        
+        const weekDates = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(weekStart);
+            date.setDate(weekStart.getDate() + i);
+            weekDates.push(formatDate(date));
+        }
+        
+        const startDate = weekDates[0];
+        const endDate = weekDates[6];
+        
+        const response = await fetch(`/api/profile/logs-in-range?start_date=${startDate}&end_date=${endDate}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to load logs');
+        }
+        
+        const logsData = result.data;
+        
+        weeklyData = weekDates.map(dateStr => {
+            const meals = logsData[dateStr] || {
+                'Breakfast': [],
+                'Lunch': [],
+                'Dinner': [],
+                'Snacks': []
+            };
+            const allLogs = [...meals.Breakfast, ...meals.Lunch, ...meals.Dinner, ...meals.Snacks];
+            const totalLogged = calculateTotalCalories(allLogs);
+            const goal = 2000;
+            const remaining = goal - totalLogged;
+            
+            const date = new Date(dateStr);
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            return {
+                date: dateStr,
+                dayName: dayNames[date.getDay()],
+                dayNum: date.getDate(),
+                month: months[date.getMonth()],
+                goal: goal,
+                logged: totalLogged,
+                remaining: remaining,
+                status: totalLogged === 0 ? 'No Logs' : totalLogged > goal ? 'Over Goal' : 'On Track',
+                meals: meals
+            };
+        });
+        
+        renderWeeklyOverview(weeklyData);
+    } catch (error) {
+        console.error('Error loading week view:', error);
+        const container = document.getElementById('logContent');
+        container.innerHTML = renderErrorState('Unable to load weekly logs. Please check your connection and try again.');
+    }
 }
 
 function updateFilterButtons(active) {
@@ -272,7 +306,7 @@ function renderTodayView(dayData) {
     container.innerHTML = `
         <div class="mb-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">${dayData.dayName}, December ${dayData.dayNum}, 2025</h2>
+                <h2 class="text-2xl font-bold text-gray-800">${dayData.dayName}, ${dayData.month} ${dayData.dayNum}, ${new Date().getFullYear()}</h2>
                 <span class="px-4 py-2 rounded-full text-sm font-bold text-white" style="background-color: ${statusBg}">
                     <i class="fas fa-check-circle mr-1"></i> ${dayData.status}
                 </span>
@@ -310,7 +344,7 @@ function renderWeeklyOverview(weekData) {
     const container = document.getElementById('logContent');
     
     if (!weekData || weekData.length === 0) {
-        container.innerHTML = renderEmptyState();
+        container.innerHTML = renderErrorState('No data available for this week.');
         return;
     }
     
@@ -470,6 +504,28 @@ function renderEmptyState() {
     `;
 }
 
+function renderErrorState(message) {
+    return `
+        <div class="text-center py-24">
+            <div class="mb-6">
+                <i class="fas fa-exclamation-triangle text-orange-400 text-8xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-700 mb-3">Unable to Load Data</h3>
+            <p class="text-gray-500 mb-8">${message}</p>
+            <button onclick="location.reload()" class="px-8 py-4 bg-[#6b9080] hover:bg-[#5a8070] text-white rounded-2xl font-bold text-lg transition-all shadow-lg inline-flex items-center gap-3">
+                <i class="fas fa-redo text-xl"></i> Retry
+            </button>
+        </div>
+    `;
+}
+
+function showErrorMessage(message) {
+    const container = document.getElementById('logContent');
+    if (container) {
+        container.innerHTML = renderErrorState(message);
+    }
+}
+
 // ====== MODAL FUNCTIONS ======
 
 function showDayDetail(dateStr) {
@@ -587,7 +643,7 @@ function closeDayDetail() {
 
 // ====== HELPER FUNCTIONS ======
 
-function _formatDate(date) {
+function formatDate(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -612,9 +668,9 @@ window.openCalendar = function() {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     
-    // Set default dates to today (Dec 15, 2025)
-    const today = new Date('2025-12-15');
-    const todayStr = _formatDate(today);
+    // Set default dates to today
+    const today = new Date();
+    const todayStr = formatDate(today);
     document.getElementById('dateFrom').value = todayStr;
     document.getElementById('dateTo').value = todayStr;
 };
@@ -672,7 +728,7 @@ window.updateDateRange = async function() {
         let current = new Date(fromDate);
         
         while (current <= toDate) {
-            const dateStr = _formatDate(current);
+            const dateStr = formatDate(current);
             const meals = logsData[dateStr] || {
                 'Breakfast': [],
                 'Lunch': [],
@@ -710,8 +766,7 @@ window.updateDateRange = async function() {
         
     } catch (error) {
         console.error('Error loading custom date range:', error);
-        alert('Error loading logs for selected dates. Please try again.');
-        // Reload today view on error
-        loadTodayView();
+        const container = document.getElementById('logContent');
+        container.innerHTML = renderErrorState('Unable to load logs for selected dates. Please try again.');
     }
 };
