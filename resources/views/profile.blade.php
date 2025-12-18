@@ -176,11 +176,27 @@
     .back-button:hover {
         transform: translateX(-4px);
     }
+
+    /* Loading state */
+    .loading-pulse {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    /* Error state for stats */
+    .stat-error {
+        color: #ef4444;
+        font-size: 0.875rem;
+    }
 </style>
 @endpush
 
 @section('content')
-{{-- Page Header with Back Button - SAME DESIGN AS "What Can I Cook" --}}
+{{-- Page Header with Back Button --}}
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-3xl font-bold text-gray-800">Profile & Log History</h1>
     <a href="{{ route('home') }}" class="text-blue-600 hover:text-blue-800 font-semibold">
@@ -203,8 +219,10 @@
                     </div>
                 </div>
                 <div class="flex-1">
-                    <h2 class="text-xl font-bold mb-1 text-gray-900" id="userName">Hermione</h2>
-                    <p class="text-gray-600 text-sm" id="userEmail">Logged in</p>
+                    <h2 class="text-xl font-bold mb-1 text-gray-900" id="userName">
+                        <i class="fas fa-spinner fa-spin text-gray-400 loading-pulse"></i>
+                    </h2>
+                    <p class="text-gray-600 text-sm" id="userEmail">Loading...</p>
                 </div>
             </div>
         </div>
@@ -215,14 +233,16 @@
                 <i class="fas fa-fire text-[#f7941d] text-2xl"></i>
                 <h3 class="text-lg font-bold text-gray-800">Weekly Streak</h3>
             </div>
-            <p class="text-sm text-gray-600 mb-4" id="streakText">2 days logged</p>
+            <p class="text-sm text-gray-600 mb-4" id="streakText">
+                <i class="fas fa-spinner fa-spin text-gray-400 loading-pulse"></i> Loading...
+            </p>
             <div class="flex justify-between gap-2">
                 <div class="flex flex-col items-center gap-1">
-                    <div class="w-10 h-10 rounded-full bg-[#f7941d] text-white flex items-center justify-center font-bold text-sm day-circle" data-day="1">1</div>
+                    <div class="w-10 h-10 rounded-full bg-white/50 text-gray-400 flex items-center justify-center font-bold text-sm day-circle" data-day="1">1</div>
                     <span class="text-xs text-gray-600 font-medium">S</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
-                    <div class="w-10 h-10 rounded-full bg-[#f7941d] text-white flex items-center justify-center font-bold text-sm day-circle" data-day="2">2</div>
+                    <div class="w-10 h-10 rounded-full bg-white/50 text-gray-400 flex items-center justify-center font-bold text-sm day-circle" data-day="2">2</div>
                     <span class="text-xs text-gray-600 font-medium">M</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
@@ -254,8 +274,10 @@
                 <i class="fas fa-chart-line text-[#ff9800] text-xl"></i>
                 <h3 class="text-lg font-bold text-gray-800">Highest Streak</h3>
             </div>
-            <div class="flex items-baseline gap-2">
-                <p class="text-5xl font-bold text-[#4caf50]" id="highestStreak">2</p>
+            <div class="flex items-baseline gap-2" id="highestStreakContainer">
+                <p class="text-5xl font-bold text-[#4caf50]" id="highestStreak">
+                    <i class="fas fa-spinner fa-spin text-gray-400 loading-pulse"></i>
+                </p>
                 <p class="text-gray-700 font-medium text-lg">days</p>
             </div>
         </div>
@@ -266,8 +288,10 @@
                 <i class="fas fa-fire text-[#ff9800] text-xl"></i>
                 <h3 class="text-lg font-bold text-gray-800">Avg Daily Intake</h3>
             </div>
-            <div class="flex items-baseline gap-2">
-                <p class="text-5xl font-bold text-[#4caf50]" id="avgCalories">1818.5</p>
+            <div class="flex items-baseline gap-2" id="avgCaloriesContainer">
+                <p class="text-5xl font-bold text-[#4caf50]" id="avgCalories">
+                    <i class="fas fa-spinner fa-spin text-gray-400 loading-pulse"></i>
+                </p>
                 <p class="text-gray-700 font-medium text-lg">cal</p>
             </div>
         </div>
@@ -294,7 +318,13 @@
         <!-- Log History Container -->
         <div class="bg-white/70 backdrop-blur-sm rounded-3xl shadow-lg p-6 min-h-[700px]">
             <div id="logContent">
-                <!-- Content loaded by JavaScript -->
+                <!-- Initial loading state -->
+                <div class="text-center py-24">
+                    <div class="mb-6">
+                        <i class="fas fa-spinner fa-spin text-[#6b9080] text-6xl"></i>
+                    </div>
+                    <p class="text-gray-600 text-lg">Loading your food logs...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -329,7 +359,7 @@
 <div id="dayDetailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center">
     <div class="bg-white rounded-3xl p-8 max-w-3xl w-11/12 max-h-[85vh] overflow-y-auto shadow-2xl calendar-modal">
         <div class="flex justify-between items-center mb-6 sticky top-0 bg-white pb-4 border-b-2 border-gray-100">
-            <h3 class="text-2xl font-bold text-gray-800" id="modalDayTitle">Monday, Dec 8</h3>
+            <h3 class="text-2xl font-bold text-gray-800" id="modalDayTitle">Loading...</h3>
             <button onclick="closeDayDetail()" class="text-gray-400 hover:text-gray-600 text-3xl leading-none transition-all">×</button>
         </div>
         
@@ -342,5 +372,5 @@
 
 @push('scripts')
 {{-- Load your existing profile.js file --}}
-<script src="{{ asset('js/profile.js') }}"></script>
+<script src="{{ asset('public/js/profile.js') }}"></script>
 @endpush

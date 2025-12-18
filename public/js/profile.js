@@ -55,11 +55,15 @@ async function loadRealProfile() {
             }
         } else {
             console.warn('Failed to load user profile:', result.message);
-            // Keep default values in UI
+            // Show error in UI
+            document.getElementById('userName').innerHTML = '<span class="text-sm text-red-500"><i class="fas fa-exclamation-triangle"></i> Unable to load</span>';
+            document.getElementById('userEmail').textContent = 'Please refresh the page';
         }
     } catch (error) {
         console.error('Error loading profile:', error);
-        // Keep default values in UI
+        // Show error in UI
+        document.getElementById('userName').innerHTML = '<span class="text-sm text-red-500"><i class="fas fa-exclamation-triangle"></i> Unable to load</span>';
+        document.getElementById('userEmail').textContent = 'Connection error';
     }
 }
 
@@ -83,10 +87,13 @@ async function loadRealStreak() {
                     circle.classList.add('bg-white/50', 'text-gray-400');
                 }
             });
+        } else {
+            console.warn('Failed to load weekly streak:', result.message);
+            document.getElementById('streakText').innerHTML = '<span class="text-red-500"><i class="fas fa-exclamation-triangle"></i> Unable to load streak</span>';
         }
     } catch (error) {
         console.error('Error loading streak:', error);
-        // Keep default values in UI
+        document.getElementById('streakText').innerHTML = '<span class="text-red-500"><i class="fas fa-exclamation-triangle"></i> Connection error</span>';
     }
 }
 
@@ -98,6 +105,9 @@ async function loadRealStats() {
         
         if (streakResult.success && streakResult.data) {
             document.getElementById('highestStreak').textContent = streakResult.data.highestStreak || 0;
+        } else {
+            console.warn('Failed to load highest streak:', streakResult.message);
+            document.getElementById('highestStreak').innerHTML = '<span class="text-sm text-red-500"><i class="fas fa-exclamation-triangle"></i></span>';
         }
         
         // Load average calories
@@ -106,10 +116,14 @@ async function loadRealStats() {
         
         if (caloriesResult.success && caloriesResult.data) {
             document.getElementById('avgCalories').textContent = caloriesResult.data.averageCalories || 0;
+        } else {
+            console.warn('Failed to load average calories:', caloriesResult.message);
+            document.getElementById('avgCalories').innerHTML = '<span class="text-sm text-red-500"><i class="fas fa-exclamation-triangle"></i></span>';
         }
     } catch (error) {
         console.error('Error loading stats:', error);
-        // Keep default values in UI
+        document.getElementById('highestStreak').innerHTML = '<span class="text-sm text-red-500"><i class="fas fa-exclamation-triangle"></i></span>';
+        document.getElementById('avgCalories').innerHTML = '<span class="text-sm text-red-500"><i class="fas fa-exclamation-triangle"></i></span>';
     }
 }
 
@@ -770,3 +784,4 @@ window.updateDateRange = async function() {
         container.innerHTML = renderErrorState('Unable to load logs for selected dates. Please try again.');
     }
 };
+
